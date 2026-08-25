@@ -93,9 +93,16 @@ internet** (só a busca por código de barras precisa de rede).
   público, então pode ser embutida sem atrito de licença. Os nomes em português
   e a categoria são nossos; os números saem do CSV como estão, e cada item
   guarda a descrição original da USDA no campo `origem`.
-- **Open Food Facts** — base aberta e colaborativa de produtos industrializados,
-  consultada por código de barras. É colaborativa, então a qualidade varia:
-  confira o rótulo quando o número parecer estranho.
+- **Open Food Facts** — base aberta e colaborativa de produtos industrializados.
+  Uma seleção dos mais escaneados no Brasil vem embutida, então o leitor de
+  código de barras funciona **sem internet** para os produtos populares; o que
+  não estiver embutido é consultado na hora. Como é colaborativa, a qualidade
+  varia: confira o rótulo quando o número parecer estranho.
+
+  **Licença:** os dados da Open Food Facts estão sob
+  [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/). A seleção embutida
+  aqui é uma base derivada e segue a mesma licença. Fonte:
+  <https://world.openfoodfacts.org/data>
 
 ### Meta calórica
 

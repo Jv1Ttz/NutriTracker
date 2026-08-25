@@ -40,6 +40,19 @@ export function porId(id, customs = []) {
   return POR_ID.get(id) ?? customs.find((c) => c.id === id) ?? null;
 }
 
+/** produtos embutidos que tem codigo de barras, indexados pelo codigo */
+const POR_CODIGO = new Map(ALIMENTOS.filter((a) => a.codigo).map((a) => [a.codigo, a]));
+
+/**
+ * Acha um produto pelo codigo de barras SEM internet.
+ *
+ * E o que faz o leitor funcionar no mercado sem sinal. Olha primeiro o que o
+ * usuario ja escaneou antes, depois a base embutida.
+ */
+export function porCodigo(codigo, customs = []) {
+  return customs.find((c) => c.codigo === codigo) ?? POR_CODIGO.get(codigo) ?? null;
+}
+
 /**
  * Busca por termos: todos precisam aparecer no nome, menos as palavras de
  * ligacao. Um termo casa pela grafia, por um sinonimo ou pela raiz (plural
@@ -59,7 +72,11 @@ export function buscar(consulta, customs = [], limite = 60) {
   const raizesQ = raizes(q);
 
   const universo = [
-    ...customs.map((c) => ({ ...c, busca: c.busca ?? normalizar(`${c.nome} ${c.marca ?? ''}`) })),
+    ...customs.map((c) => ({
+      ...c,
+      doUsuario: true,
+      busca: c.busca ?? normalizar(`${c.nome} ${c.marca ?? ''}`),
+    })),
     ...ALIMENTOS,
   ];
 
@@ -78,10 +95,13 @@ export function buscar(consulta, customs = [], limite = 60) {
     // "peito de frango" tem que trazer o peito antes do file a milanesa,
     // e "ovos" tem que trazer o ovo antes do macarrao com ovos
     for (const t of termos) if (alvo.includes(t)) pontos += 6;
-    // so o que E do usuario sobe: alimento cadastrado por ele ou produto que
-    // ele escaneou. A USDA e base embutida como a TACO, e concorre de igual
-    // para igual - senao quinoa apareceria na frente de arroz
-    if (a.fonte === 'custom' || a.fonte === 'off') pontos += 15;
+    // Sobe o que E do usuario - cadastrado ou escaneado por ele. Antes o
+    // teste era pela fonte, mas com os produtos da OFF embutidos isso passou
+    // a promover a base inteira, nao o que a pessoa usou.
+    if (a.doUsuario) pontos += 15;
+    // e produto de marca desce um pouco: quem busca "arroz" quer o arroz da
+    // TACO, nao trinta pacotes de arroz de marca
+    else if (a.fonte === 'off') pontos -= 8;
     pontos -= alvo.length * 0.15; // nomes curtos e mais especificos primeiro
 
     achados.push({ alimento: a, pontos });

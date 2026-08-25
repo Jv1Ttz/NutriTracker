@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import Folha from './Folha.jsx';
 import { buscarPorCodigo } from '../lib/openfoodfacts.js';
+import { porCodigo } from '../lib/busca.js';
+import { lerEstado } from '../lib/db.js';
 
 const FORMATOS_NATIVOS = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128'];
 
@@ -30,6 +32,15 @@ export default function Scanner({ onFechar, onProduto }) {
       if (jaLeu.current) return;
       jaLeu.current = true;
       parar();
+
+      // a base embutida primeiro: resolve sem rede, e a OFF ja saiu do ar
+      // duas vezes so durante o desenvolvimento deste app
+      const local = porCodigo(codigo, lerEstado().customs);
+      if (local) {
+        aoAchar.current(local);
+        return;
+      }
+
       setEstado('consultando');
       try {
         const produto = await buscarPorCodigo(codigo);
@@ -151,6 +162,10 @@ export default function Scanner({ onFechar, onProduto }) {
     const codigo = manual.replace(/\D/g, '');
     if (codigo.length < 8) return;
     jaLeu.current = false;
+
+    const local = porCodigo(codigo, lerEstado().customs);
+    if (local) return aoAchar.current(local);
+
     setEstado('consultando');
     try {
       const produto = await buscarPorCodigo(codigo);

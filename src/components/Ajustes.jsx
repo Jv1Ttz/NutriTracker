@@ -297,13 +297,32 @@ export default function Ajustes({ estado, metas }) {
       <div className="cartao">
         <div className="cartao-titulo">Sobre os números</div>
         <p className="sub" style={{ lineHeight: 1.55 }}>
-          Os alimentos vêm da <b>TACO 4ª edição</b> (UNICAMP, 2011), de uma seleção da{' '}
-          <b>USDA FoodData Central</b> com o que a TACO não cobre — quinoa, chia, iogurte grego,
-          leites vegetais, suplementos — e do <b>Open Food Facts</b> para produtos com código de
-          barras. A meta calórica usa a equação
+          Os alimentos vêm de três bases. A <b>TACO 4ª edição</b> (UNICAMP, 2011) para alimentos
+          brasileiros; uma seleção da <b>USDA FoodData Central</b> com o que a TACO não cobre —
+          quinoa, chia, iogurte grego, leites vegetais, suplementos; e o{' '}
+          <b>Open Food Facts</b> para produtos industrializados com código de barras. A meta calórica usa a equação
           de <b>Mifflin-St Jeor</b>, que é uma estimativa populacional: o seu gasto real pode variar
           uns 10% para cima ou para baixo. Quem dá a palavra final é a balança ao longo das semanas.
           Isto aqui é uma ferramenta de acompanhamento, não substitui nutricionista ou médico.
+        </p>
+      </div>
+
+      <div className="cartao">
+        <div className="cartao-titulo">Créditos das bases</div>
+        <p className="sub" style={{ lineHeight: 1.55 }}>
+          Os produtos com código de barras vêm do{' '}
+          <a href="https://world.openfoodfacts.org/data" target="_blank" rel="noopener">
+            Open Food Facts
+          </a>
+          , uma base aberta e colaborativa, disponibilizada sob a licença{' '}
+          <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener">
+            ODbL 1.0
+          </a>
+          . A seleção embutida neste app é uma base derivada e segue a mesma licença.
+        </p>
+        <p className="sub" style={{ lineHeight: 1.55, marginTop: 10 }}>
+          A <b>TACO</b> é da UNICAMP e a <b>USDA FoodData Central</b> é de domínio público. Os
+          nomes em português dos itens da USDA são deste app; os valores, não.
         </p>
       </div>
 
