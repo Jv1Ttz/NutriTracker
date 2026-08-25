@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useStore } from './lib/db.js';
 import { sincronizar } from './lib/sync.js';
-import { temSessaoGuardada } from './lib/supabase.js';
+import { temSessaoGuardada, voltandoDeLogin, limparUrlDeLogin } from './lib/supabase.js';
 import { calcularMetas } from './lib/metas.js';
 import { chaveData } from './lib/util.js';
 import Onboarding from './components/Onboarding.jsx';
@@ -28,12 +28,20 @@ function useSincronizacaoAutomatica() {
 
   useEffect(() => {
     async function rodar() {
-      // sem sessao guardada nao ha o que sincronizar, e assim nem baixamos
-      // a biblioteca do Supabase
-      if (rodando.current || !navigator.onLine || !temSessaoGuardada()) return;
+      if (rodando.current || !navigator.onLine) return;
+
+      // Voltando do Google, o usuario cai aqui na aba Hoje com o ?code= na
+      // URL e ainda sem sessao guardada. Sem tratar esse caso, nada carrega
+      // a biblioteca e o codigo nunca vira sessao - o login travaria calado.
+      const voltando = voltandoDeLogin();
+      if (!voltando && !temSessaoGuardada()) return;
+
       rodando.current = true;
       try {
+        // sincronizar() chama getSession(), que espera a troca do codigo
         await sincronizar();
+        // so depois da troca: tirar o ?code= antes dela quebraria o login
+        if (voltando) limparUrlDeLogin();
       } catch (e) {
         console.warn('Sincronização adiada:', e.message);
       } finally {

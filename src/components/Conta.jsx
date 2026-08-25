@@ -1,13 +1,24 @@
 import { useState, useEffect } from 'react';
-import { obterSupabase, configurado } from '../lib/supabase.js';
+import {
+  obterSupabase,
+  configurado,
+  loginPorEmail,
+  limparUrlDeLogin,
+} from '../lib/supabase.js';
 import { sincronizar } from '../lib/sync.js';
+import { IconeGoogle } from './Icones.jsx';
 
 /**
  * Conta e sincronizacao, dentro dos Ajustes.
  *
- * O login e por CODIGO de 6 digitos, nao por link magico: no celular o link
- * abre no navegador padrao, fora do app instalado, e a sessao fica no lugar
- * errado. Digitar o codigo mantem tudo dentro do PWA.
+ * O caminho principal e entrar com Google. Alem de ser um toque so, o fluxo
+ * COMECA dentro do app e volta para a mesma origem - diferente do link por
+ * e-mail, que comeca no aplicativo de e-mail e tende a abrir a sessao no
+ * navegador padrao, fora do PWA instalado.
+ *
+ * O login por codigo de 6 digitos continua implementado, mas so aparece com
+ * VITE_LOGIN_EMAIL=1: ele depende de o template do Supabase trazer
+ * {{ .Token }}, e o Supabase so libera editar template com SMTP proprio.
  */
 export default function Conta() {
   const [sb, setSb] = useState(null);
@@ -52,6 +63,20 @@ export default function Conta() {
     }
   }
 
+  const entrarComGoogle = () =>
+    tentar(async () => {
+      const { error } = await sb.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          // volta para a propria pagina; precisa estar na allow list do
+          // Supabase (Authentication > URL Configuration)
+          redirectTo: window.location.origin + window.location.pathname,
+        },
+      });
+      if (error) throw error;
+      // daqui o navegador sai para o Google e volta sozinho
+    });
+
   const pedirCodigo = () =>
     tentar(
       async () => {
@@ -95,6 +120,7 @@ export default function Conta() {
     tentar(async () => {
       const { error } = await sb.auth.signOut();
       if (error) throw error;
+      limparUrlDeLogin();
       setEtapa('email');
       setCodigo('');
       setRecado('Você saiu. Os dados continuam salvos neste aparelho.');
@@ -107,7 +133,7 @@ export default function Conta() {
       {sessao ? (
         <>
           <p className="sub" style={{ marginBottom: 12, lineHeight: 1.55 }}>
-            Conectado como <b>{sessao.user.email}</b>. Entre com esse mesmo e-mail no outro
+            Conectado como <b>{sessao.user.email}</b>. Entre com essa mesma conta no outro
             aparelho e os dois passam a compartilhar diário, pesos e alimentos cadastrados.
           </p>
           <div className="linha">
@@ -121,61 +147,72 @@ export default function Conta() {
         </>
       ) : (
         <>
-          <p className="sub" style={{ marginBottom: 12, lineHeight: 1.55 }}>
+          <p className="sub" style={{ marginBottom: 14, lineHeight: 1.55 }}>
             Opcional. Sem conta, o app segue funcionando offline e os dados ficam só neste
             aparelho — que é como ele nasceu. Com conta, o mesmo diário aparece no celular e no
             PC.
           </p>
 
-          {etapa === 'email' ? (
-            <div className="campo">
-              <label htmlFor="conta-email">Seu e-mail</label>
-              <div className="linha">
-                <input
-                  id="conta-email"
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="voce@email.com"
-                />
-                <button
-                  className="btn principal"
-                  onClick={pedirCodigo}
-                  disabled={ocupado || carregando || !email.includes('@')}
-                  style={{ flex: '0 0 120px' }}
-                >
-                  {ocupado ? '...' : 'Enviar código'}
+          <button
+            className="btn bloco"
+            onClick={entrarComGoogle}
+            disabled={ocupado || carregando}
+            style={{ gap: 10 }}
+          >
+            <IconeGoogle />
+            {ocupado ? 'Abrindo...' : 'Entrar com Google'}
+          </button>
+
+          {loginPorEmail &&
+            (etapa === 'email' ? (
+              <div className="campo" style={{ marginTop: 16 }}>
+                <label htmlFor="conta-email">Ou entre com seu e-mail</label>
+                <div className="linha">
+                  <input
+                    id="conta-email"
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="voce@email.com"
+                  />
+                  <button
+                    className="btn"
+                    onClick={pedirCodigo}
+                    disabled={ocupado || carregando || !email.includes('@')}
+                    style={{ flex: '0 0 120px' }}
+                  >
+                    {ocupado ? '...' : 'Enviar código'}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="campo" style={{ marginTop: 16 }}>
+                <label htmlFor="conta-codigo">Código de 6 dígitos</label>
+                <div className="linha">
+                  <input
+                    id="conta-codigo"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    value={codigo}
+                    onChange={(e) => setCodigo(e.target.value)}
+                    placeholder="000000"
+                  />
+                  <button
+                    className="btn"
+                    onClick={confirmarCodigo}
+                    disabled={ocupado || carregando || codigo.trim().length < 6}
+                    style={{ flex: '0 0 120px' }}
+                  >
+                    {ocupado ? '...' : 'Entrar'}
+                  </button>
+                </div>
+                <button className="sub" onClick={() => setEtapa('email')} style={{ padding: 0 }}>
+                  usar outro e-mail
                 </button>
               </div>
-            </div>
-          ) : (
-            <div className="campo">
-              <label htmlFor="conta-codigo">Código de 6 dígitos</label>
-              <div className="linha">
-                <input
-                  id="conta-codigo"
-                  inputMode="numeric"
-                  autoComplete="one-time-code"
-                  value={codigo}
-                  onChange={(e) => setCodigo(e.target.value)}
-                  placeholder="000000"
-                />
-                <button
-                  className="btn principal"
-                  onClick={confirmarCodigo}
-                  disabled={ocupado || carregando || codigo.trim().length < 6}
-                  style={{ flex: '0 0 120px' }}
-                >
-                  {ocupado ? '...' : 'Entrar'}
-                </button>
-              </div>
-              <button className="sub" onClick={() => setEtapa('email')} style={{ padding: 0 }}>
-                usar outro e-mail
-              </button>
-            </div>
-          )}
+            ))}
         </>
       )}
 

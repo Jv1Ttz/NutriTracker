@@ -17,6 +17,9 @@ const CHAVE = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 export const configurado = Boolean(URL && CHAVE);
 
+/** Habilita o login por codigo no e-mail; exige SMTP proprio no Supabase. */
+export const loginPorEmail = import.meta.env.VITE_LOGIN_EMAIL === '1';
+
 /**
  * Ja existe sessao guardada neste aparelho?
  *
@@ -34,6 +37,28 @@ export function temSessaoGuardada() {
   }
 }
 
+/**
+ * Estamos voltando do Google agora?
+ *
+ * Sem esta checagem o login travaria: o usuario cai na aba "Hoje" com o
+ * ?code= na URL, ainda sem sessao guardada, entao nada carregaria a
+ * biblioteca - e o codigo nunca viraria sessao.
+ */
+export function voltandoDeLogin() {
+  if (!configurado || typeof window === 'undefined') return false;
+  return (
+    new URLSearchParams(window.location.search).has('code') ||
+    window.location.hash.includes('access_token')
+  );
+}
+
+/** Tira o ?code= da barra de enderecos depois que ele ja foi trocado. */
+export function limparUrlDeLogin() {
+  if (typeof window === 'undefined') return;
+  const limpa = window.location.origin + window.location.pathname;
+  window.history.replaceState({}, '', limpa);
+}
+
 let promessa = null;
 
 export function obterSupabase() {
@@ -43,8 +68,10 @@ export function obterSupabase() {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
-        // o app nao tem rotas e o login e por codigo, nao por link
-        detectSessionInUrl: false,
+        // o login com Google volta com o codigo de autorizacao na URL, e e
+        // aqui que ele vira sessao
+        detectSessionInUrl: true,
+        flowType: 'pkce',
       },
     })
   );
