@@ -66,7 +66,7 @@ internet** (só a busca por código de barras precisa de rede).
 |---|---|
 | **Abertura** | Aparece uma vez, antes do cadastro: o que o app faz e onde seus dados ficam. |
 | **Hoje** | Anel de calorias, barras de macro, as 4 refeições. Navega entre os dias nas setas. Toque em qualquer item para editar ou apagar. |
-| **Adicionar** | Busca nos 4.092 alimentos embutidos (TACO + USDA + produtos de mercado), leitor de código de barras, "o que você mais come" e cadastro manual. |
+| **Adicionar** | Busca nos 20.171 alimentos embutidos (TACO + USDA + produtos de mercado), leitor de código de barras, "o que você mais come" e cadastro manual. |
 | **Peso** | Registro diário, gráfico com média móvel de 7 dias e sugestão automática de ajuste nas calorias. |
 | **Ajustes** | Editar perfil, fixar metas na mão, ver seus alimentos cadastrados, backup e restauração. |
 

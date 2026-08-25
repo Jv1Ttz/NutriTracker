@@ -124,8 +124,8 @@ export default function Buscar({ estado, data, refeicaoInicial, onDepoisDeAdicio
         <div className="centro-txt">
           Busque pelo nome do alimento.
           <br />
-          São mais de 4 mil itens embutidos: a tabela TACO, uma seleção da USDA e os produtos de
-          mercado mais escaneados no Brasil. O leitor de código de barras funciona offline.
+          São 20 mil itens embutidos: a tabela TACO, uma seleção da USDA e os produtos de mercado
+          brasileiro da Open Food Facts. Tudo funciona offline, o leitor inclusive.
         </div>
       )}
 

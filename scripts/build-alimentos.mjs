@@ -101,11 +101,15 @@ alimentos = [...alimentos, ...usda];
 //
 // LICENCA: ODbL. Embutir e distribuir base derivada, entao o app credita a
 // Open Food Facts e declara a licenca em Ajustes e no LEIA-ME.
-const off = JSON.parse(readFileSync(join(aqui, 'off-selecao.json'), 'utf-8')).map((a) => ({
-  ...a,
-  categoria: 'Código de barras',
-  busca: normalizar(`${a.nome} ${a.marca ?? ''}`),
-}));
+// `categoria` e `fonte` sao a MESMA string para os 19 mil produtos, e
+// repeti-las custava quase 1 MB no arquivo. Ficam de fora daqui e o
+// carregador as devolve, que sai mais barato que transportar.
+const off = JSON.parse(readFileSync(join(aqui, 'off-selecao.json'), 'utf-8')).map(
+  ({ fonte, ...a }) => ({
+    ...a,
+    busca: normalizar(`${a.nome} ${a.marca ?? ''}`),
+  })
+);
 
 alimentos = [...alimentos, ...off];
 

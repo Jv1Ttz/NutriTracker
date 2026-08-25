@@ -25,7 +25,12 @@ export function baseCarregada() {
 
 export function carregarBase() {
   promessa ??= import('../data/alimentos.json').then((m) => {
-    ALIMENTOS = m.default;
+    // os produtos da Open Food Facts vao sem `fonte` e sem `categoria`: sao
+    // a mesma string para 19 mil itens, e devolve-las aqui custa um laco
+    // barato contra quase 1 MB a menos para baixar e analisar
+    ALIMENTOS = m.default.map((a) =>
+      a.fonte ? a : { ...a, fonte: 'off', categoria: 'Código de barras' }
+    );
     POR_ID = new Map(ALIMENTOS.map((a) => [a.id, a]));
     POR_CODIGO = new Map(ALIMENTOS.filter((a) => a.codigo).map((a) => [a.codigo, a]));
     return ALIMENTOS;

@@ -40,7 +40,10 @@ export default defineConfig({
       workbox: {
         // a base TACO tem ~150 KB, cabe tranquilo no precache
         globPatterns: ['**/*.{js,css,html,png,svg,json,woff2}'],
-        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
+        // a base de alimentos passa de 4 MB; sem levantar este teto o
+        // workbox a deixa DE FORA do precache e o app perde a busca offline,
+        // que e a razao de ele existir
+        maximumFileSizeToCacheInBytes: 12 * 1024 * 1024,
         runtimeCaching: [
           {
             // consultas de codigo de barras: usa cache quando ja consultou antes
