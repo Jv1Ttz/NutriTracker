@@ -10,7 +10,7 @@ os dados ficam só no seu aparelho.
 ### 1. Abrir o terminal na pasta
 
 ```bash
-cd C:\Users\Vitor\Desktop\Projetos\NutriTracker
+cd C:\Users\Ello1\OneDrive\Desktop\Codes\Projetos\NutriTracker
 ```
 
 ### 2. Instalar as dependências (só na primeira vez)
@@ -113,12 +113,29 @@ nutricionista nem médico.
 
 ## Onde ficam seus dados
 
-Tudo em `localStorage`, no navegador daquele aparelho. Sem servidor, sem conta,
-sem sincronização, sem ninguém vendo.
+Por padrão, tudo em `localStorage`, no navegador daquele aparelho. Sem conta,
+sem ninguém vendo.
 
 O lado ruim: se você limpar os dados do navegador ou desinstalar o app, some.
 Em **Ajustes → Baixar backup** dá para salvar um `.json` com tudo, e restaurar
 depois no mesmo lugar.
+
+### Sincronizar celular e PC (opcional)
+
+Em **Ajustes → Sincronizar entre aparelhos** dá para entrar com um e-mail e ter
+o mesmo diário nos dois. O login é por código de 6 dígitos, não por link: no
+celular um link abriria no navegador padrão, fora do app instalado, e a sessão
+ficaria no lugar errado.
+
+O app continua offline-first — o `localStorage` segue sendo a fonte de verdade
+local e a sincronização acontece quando dá. Cada item do diário é uma linha
+própria no banco, então registrar o café no celular e o almoço no PC, os dois
+offline, não faz um sobrescrever o outro. Em conflito de verdade (o mesmo item
+editado nos dois), ganha a edição mais recente.
+
+Para rodar com sincronização, copie `.env.example` para `.env.local` e preencha
+com os dados do seu projeto Supabase. **Sem essas variáveis o app funciona
+igual, só offline** — a seção de conta nem aparece nos Ajustes.
 
 ---
 
@@ -135,7 +152,10 @@ src/
   lib/
     metas.js          Mifflin-St Jeor, macros, sugestão de ajuste, IMC
     db.js             estado + persistência em localStorage
-    busca.js          busca por termos e ranking
+    busca.js          busca por termos, sinônimos e ranking
+    sinonimos.js      grafias equivalentes ("mussarela" acha "mozarela")
+    supabase.js       cliente do Supabase, carregado sob demanda
+    sync.js           sincronização entre aparelhos
     calculo.js        soma do dia, média móvel
     medidas.js        medidas caseiras (colher, concha, fatia...)
     openfoodfacts.js  consulta por código de barras
@@ -158,7 +178,6 @@ npm run build:icons  # regenera os ícones do PWA
 
 ## Ideias para depois
 
-- Sincronizar entre celular e PC (Supabase resolve sem reescrever o app)
 - Receitas: montar um prato uma vez e registrar com um toque
 - Registro de água
 - Metas diferentes para dia de treino e dia de descanso

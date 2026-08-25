@@ -1,5 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useStore } from './lib/db.js';
+import { sincronizar } from './lib/sync.js';
+import { temSessaoGuardada } from './lib/supabase.js';
 import { calcularMetas } from './lib/metas.js';
 import { chaveData } from './lib/util.js';
 import Onboarding from './components/Onboarding.jsx';
@@ -16,8 +18,43 @@ const ABAS = [
   { id: 'ajustes', nome: 'Ajustes', Icone: IconeAjustes },
 ];
 
+/**
+ * Sincroniza ao abrir o app, ao voltar o foco e ao voltar a internet.
+ * Silencioso: se estiver deslogado ou offline, nao faz nada e nao reclama -
+ * a tela de Ajustes tem o botao para sincronizar na mao e mostrar o erro.
+ */
+function useSincronizacaoAutomatica() {
+  const rodando = useRef(false);
+
+  useEffect(() => {
+    async function rodar() {
+      // sem sessao guardada nao ha o que sincronizar, e assim nem baixamos
+      // a biblioteca do Supabase
+      if (rodando.current || !navigator.onLine || !temSessaoGuardada()) return;
+      rodando.current = true;
+      try {
+        await sincronizar();
+      } catch (e) {
+        console.warn('Sincronização adiada:', e.message);
+      } finally {
+        rodando.current = false;
+      }
+    }
+
+    rodar();
+    const aoVoltar = () => document.visibilityState === 'visible' && rodar();
+    document.addEventListener('visibilitychange', aoVoltar);
+    window.addEventListener('online', rodar);
+    return () => {
+      document.removeEventListener('visibilitychange', aoVoltar);
+      window.removeEventListener('online', rodar);
+    };
+  }, []);
+}
+
 export default function App() {
   const estado = useStore();
+  useSincronizacaoAutomatica();
   const [aba, setAba] = useState('hoje');
   const [data, setData] = useState(() => chaveData());
   const [refeicaoAlvo, setRefeicaoAlvo] = useState('almoco');

@@ -8,6 +8,7 @@ import {
   removerCustom,
 } from '../lib/db.js';
 import { FATORES, OBJETIVOS, calcularMetas } from '../lib/metas.js';
+import Conta from './Conta.jsx';
 import { chaveData, inteiro } from '../lib/util.js';
 import { IconeLixo } from './Icones.jsx';
 
@@ -230,12 +231,18 @@ export default function Ajustes({ estado, metas }) {
         </div>
       )}
 
+      <Conta />
+
       <div className="cartao">
         <div className="cartao-titulo">Seus dados são só seus</div>
         <p className="sub" style={{ marginBottom: 12, lineHeight: 1.55 }}>
-          Tudo fica salvo no próprio navegador deste aparelho. Não existe servidor, conta nem
-          sincronização. Se limpar os dados do navegador, some — por isso vale baixar um backup de
-          vez em quando.
+          Por padrão tudo fica salvo no próprio navegador deste aparelho: sem servidor, sem conta,
+          sem ninguém vendo. Se você ligar a sincronização acima, aí o diário passa a viajar por
+          uma conta sua — e continua só sua, ninguém mais alcança esses dados.
+        </p>
+        <p className="sub" style={{ marginBottom: 12, lineHeight: 1.55 }}>
+          De um jeito ou de outro, vale baixar um backup de vez em quando: limpar os dados do
+          navegador apaga a cópia deste aparelho.
         </p>
         <div className="linha">
           <button className="btn" onClick={baixarBackup}>
