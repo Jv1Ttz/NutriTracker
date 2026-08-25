@@ -1,0 +1,27 @@
+{
+  "name": "nutritracker",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Contador de calorias e macros pessoal, com base TACO e leitor de codigo de barras",
+  "scripts": {
+    "dev": "vite --host",
+    "dev:https": "node scripts/dev-https.mjs",
+    "build": "vite build",
+    "preview": "vite preview --host",
+    "build:taco": "node scripts/build-taco.mjs",
+    "build:icons": "node scripts/build-icons.mjs"
+  },
+  "dependencies": {
+    "@zxing/browser": "^0.1.5",
+    "@zxing/library": "^0.21.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-basic-ssl": "^2.3.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.0.7",
+    "vite-plugin-pwa": "^0.21.1"
+  }
+}

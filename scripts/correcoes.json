@@ -1,0 +1,19 @@
+{
+  "_leia": "Na TACO 4a edicao alguns alimentos vem marcados com '*' (valor nao disponivel). Sao 4 no total. Aqui completamos os que sao comuns demais para ficar de fora, com valores do USDA FoodData Central. Os que nao dao para completar com seguranca sao removidos pelo build.",
+  "taco-458": {
+    "kcal": 61, "prot": 3.15, "carb": 4.8, "gord": 3.25, "fibra": 0, "sodio": 43, "calcio": 123,
+    "origem": "USDA FDC 746782 (Milk, whole, 3.25% milkfat)"
+  },
+  "taco-457": {
+    "kcal": 34, "prot": 3.37, "carb": 4.96, "gord": 0.08, "fibra": 0, "sodio": 42, "calcio": 122,
+    "origem": "USDA FDC 746776 (Milk, nonfat, fluid)"
+  },
+  "taco-516": {
+    "kcal": 0, "prot": 0, "carb": 0, "gord": 0, "fibra": 0,
+    "origem": "Sal nao fornece energia"
+  },
+  "taco-517": {
+    "kcal": 0, "prot": 0, "carb": 0, "gord": 0, "fibra": 0, "sodio": 38758,
+    "origem": "Sal nao fornece energia; sodio do USDA FDC 746775"
+  }
+}

@@ -1,0 +1,9 @@
+node_modules
+dist
+dev-dist
+*.local
+
+# estado local de ferramenta, nao e do projeto
+.claude-flow
+.claude/proven-config.json
+.claude/.proven-config-version
