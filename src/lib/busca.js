@@ -83,6 +83,41 @@ export function porCodigo(codigo, customs = []) {
 }
 
 /**
+ * Outros produtos do mesmo fabricante, para quando o codigo lido nao existe.
+ *
+ * Os primeiros digitos de um EAN identificam a empresa. Um chiclete Mentos
+ * que nao esta na base tem varios irmaos que estao - e a embalagem que a
+ * pessoa tem na mao costuma ser um deles, em outro sabor ou tamanho.
+ *
+ * Tenta 8 digitos primeiro, que e mais especifico, e afrouxa para 7 se der
+ * pouca coisa: o prefixo da empresa na GS1 nao tem tamanho fixo.
+ */
+export function porFabricante(codigo, customs = [], limite = 6) {
+  if (!codigo || codigo.length < 8) return [];
+  const todos = [...customs.filter((c) => c.codigo), ...ALIMENTOS.filter((a) => a.codigo)];
+  const comPrefixo = (n) =>
+    todos.filter((a) => a.codigo !== codigo && a.codigo.startsWith(codigo.slice(0, n)));
+
+  let achados = comPrefixo(8);
+  if (achados.length < 3) achados = comPrefixo(7);
+
+  // Ordena por PROXIMIDADE DE CODIGO, nao por nome.
+  //
+  // Fabricante numera SKU em sequencia: um chiclete 7895144899930 que nao
+  // esta na base tem o vizinho 7895144899947 na prateleira ao lado, quase
+  // sempre o mesmo produto em outro sabor. Quanto mais digitos iniciais em
+  // comum, maior a chance de ser a embalagem que a pessoa tem na mao.
+  const comum = (c) => {
+    let i = 0;
+    while (i < c.length && i < codigo.length && c[i] === codigo[i]) i++;
+    return i;
+  };
+  return achados
+    .sort((a, b) => comum(b.codigo) - comum(a.codigo) || a.nome.length - b.nome.length)
+    .slice(0, limite);
+}
+
+/**
  * Busca por termos: todos precisam aparecer no nome, menos as palavras de
  * ligacao. Um termo casa pela grafia, por um sinonimo ou pela raiz (plural
  * e genero).

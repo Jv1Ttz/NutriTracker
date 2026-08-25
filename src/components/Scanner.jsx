@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Folha from './Folha.jsx';
 import { buscarPorCodigo } from '../lib/openfoodfacts.js';
-import { porCodigo, carregarBase } from '../lib/busca.js';
+import { porCodigo, porFabricante, carregarBase } from '../lib/busca.js';
 import { lerEstado } from '../lib/db.js';
 
 const FORMATOS_NATIVOS = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128'];
@@ -20,6 +20,8 @@ export default function Scanner({ onFechar, onProduto, onCadastrar }) {
   const [erro, setErro] = useState('');
   // codigo lido que nao existe em base nenhuma: vira convite para cadastrar
   const [semCadastro, setSemCadastro] = useState('');
+  // produtos do mesmo fabricante: quase sempre a embalagem certa esta aqui
+  const [irmaos, setIrmaos] = useState([]);
   const [manual, setManual] = useState('');
   const jaLeu = useRef(false);
   // guardado em ref para o efeito da camera nao reiniciar a cada render
@@ -52,6 +54,7 @@ export default function Scanner({ onFechar, onProduto, onCadastrar }) {
           aoAchar.current(produto);
         } else {
           setSemCadastro(codigo);
+          setIrmaos(porFabricante(codigo, lerEstado().customs));
           setEstado('erro');
         }
       } catch (e) {
@@ -173,6 +176,7 @@ export default function Scanner({ onFechar, onProduto, onCadastrar }) {
       if (produto) aoAchar.current(produto);
       else {
         setSemCadastro(codigo);
+        setIrmaos(porFabricante(codigo, lerEstado().customs));
         setEstado('erro');
       }
     } catch (err) {
@@ -211,6 +215,27 @@ export default function Scanner({ onFechar, onProduto, onCadastrar }) {
             </button>
           )}
         </div>
+      )}
+
+      {estado === 'erro' && irmaos.length > 0 && (
+        <>
+          <div className="cartao-titulo" style={{ marginTop: 18 }}>
+            Do mesmo fabricante
+          </div>
+          <p className="sub" style={{ marginBottom: 10, lineHeight: 1.5 }}>
+            Talvez seja um destes, em outro sabor ou tamanho. Confira o rótulo antes de escolher.
+          </p>
+          {irmaos.map((a) => (
+            <button key={a.id} className="resultado" onClick={() => aoAchar.current(a)}>
+              <div className="resultado-info">
+                <div className="resultado-nome">{a.nome}</div>
+                <div className="resultado-det">
+                  {Math.round(a.kcal)} kcal · {a.marca || a.categoria}
+                </div>
+              </div>
+            </button>
+          ))}
+        </>
       )}
 
       {estado === 'erro' && !semCadastro && (
