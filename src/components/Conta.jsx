@@ -1,5 +1,11 @@
 import { useState, useEffect } from 'react';
-import { obterSupabase, configurado, loginPorEmail, limparUrlDeLogin } from '../lib/supabase.js';
+import {
+  obterSupabase,
+  configurado,
+  loginPorEmail,
+  limparUrlDeLogin,
+  DIGITOS_DO_CODIGO,
+} from '../lib/supabase.js';
 import {
   entrarComGoogle,
   criarConta,
@@ -21,7 +27,7 @@ import { IconeGoogle } from './Icones.jsx';
  * ideia. As acoes vem todas de lib/auth.js, para as duas telas nao
  * divergirem.
  *
- * O login por codigo de 6 digitos continua atras de VITE_LOGIN_EMAIL=1:
+ * O login por codigo continua atras de VITE_LOGIN_EMAIL=1:
  * depende de o template do Supabase trazer {{ .Token }}, e o Supabase so
  * libera editar template com SMTP proprio.
  */
@@ -230,7 +236,9 @@ export default function Conta() {
           {loginPorEmail && (
             <div className="campo" style={{ marginTop: 16 }}>
               <label htmlFor="conta-codigo">
-                {esperandoCodigo ? 'Código de 6 dígitos' : 'Ou receba um código por e-mail'}
+                {esperandoCodigo
+                  ? `Código de ${DIGITOS_DO_CODIGO} dígitos`
+                  : 'Ou receba um código por e-mail'}
               </label>
               <div className="linha">
                 {esperandoCodigo ? (
@@ -241,7 +249,7 @@ export default function Conta() {
                       autoComplete="one-time-code"
                       value={codigo}
                       onChange={(e) => setCodigo(e.target.value)}
-                      placeholder="000000"
+                      placeholder={'0'.repeat(DIGITOS_DO_CODIGO)}
                     />
                     <button
                       className="btn"

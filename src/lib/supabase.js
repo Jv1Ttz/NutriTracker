@@ -21,6 +21,17 @@ export const configurado = Boolean(URL && CHAVE);
 export const loginPorEmail = import.meta.env.VITE_LOGIN_EMAIL === '1';
 
 /**
+ * Quantos digitos o codigo do e-mail tem.
+ *
+ * Espelha "Email OTP length" em Authentication > Providers > Email. O padrao
+ * do Supabase e 6, mas ESTE projeto esta em 8 - mudou la, mude aqui, que e so
+ * rotulo e placeholder. A validacao aceita 6 ou mais de proposito: uma
+ * divergencia de configuracao nunca deve travar o botao, porque quem recusa
+ * codigo errado e o servidor, nao a tela.
+ */
+export const DIGITOS_DO_CODIGO = 8;
+
+/**
  * Ja existe sessao guardada neste aparelho?
  *
  * Serve para nao baixar a biblioteca a toa: quem nunca entrou em uma conta
