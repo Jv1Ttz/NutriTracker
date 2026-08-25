@@ -65,80 +65,183 @@ function montarPNG(largura, altura, rgba) {
 
 /* ---------------------------------------------------------------- desenho */
 
-const FUNDO_TOPO = [26, 46, 33];
-const FUNDO_BASE = [15, 21, 18];
-const LIMA = [154, 230, 110];
-const TRILHA = [40, 58, 47];
+/**
+ * A marca, desenhada em pixels.
+ *
+ * A mesma geometria vive em src/components/Marca.jsx, em SVG. Sao dois
+ * desenhos da mesma coisa porque o manifesto do PWA quer PNG e a tela quer
+ * vetor: mexeu em um, mexa no outro. O sistema de coordenadas e o mesmo
+ * quadrado 64x64 do viewBox, para os numeros baterem entre os dois.
+ *
+ * Curvas viram polilinhas e o traco vira "distancia ate a polilinha menor
+ * que metade da espessura" - que e exatamente o que stroke-linecap="round"
+ * significa. Assim nao entra biblioteca de imagem so para isto.
+ */
+
+// [x0,y0, cx1,cy1, cx2,cy2, x1,y1]
+const MACA = [
+  [32, 27, 28, 21, 21, 18, 16, 22],
+  [16, 22, 10, 27, 9, 36, 12, 44],
+  [12, 44, 15, 52, 21, 58, 26, 57],
+  [26, 57, 29, 56.5, 30.5, 55, 32, 55],
+  [32, 55, 33.5, 55, 35, 56.5, 38, 57],
+  [38, 57, 43, 58, 49, 52, 52, 44],
+  [52, 44, 55, 36, 54, 27, 48, 22],
+  [48, 22, 43, 18, 36, 21, 32, 27],
+];
+const FOLHA_DIREITA = [
+  [32, 26, 34, 17, 40, 11, 47, 10],
+  [47, 10, 47, 18, 42, 25, 32, 26],
+];
+const FOLHA_ESQUERDA = [
+  [32, 26, 29, 19, 25, 14, 20, 13],
+  [20, 13, 19, 20, 23, 25, 32, 26],
+];
+const CHECK = [[25, 38], [30.5, 44], [42, 31]];
+const MEDIDAS = [
+  [[14.5, 33], [20.5, 33]],
+  [[13.8, 39], [20, 39]],
+  [[15, 45], [20.5, 45]],
+];
+
+const VERDE = [76, 175, 80]; // #4CAF50
+const LIMA = [155, 195, 74]; // #9BC34A
+const BRANCO = [255, 255, 255];
+
+function achatar(segmentos, passos = 24) {
+  const pontos = [];
+  for (const [x0, y0, x1, y1, x2, y2, x3, y3] of segmentos) {
+    for (let i = 0; i < passos; i++) {
+      const t = i / passos;
+      const u = 1 - t;
+      pontos.push([
+        u * u * u * x0 + 3 * u * u * t * x1 + 3 * u * t * t * x2 + t * t * t * x3,
+        u * u * u * y0 + 3 * u * u * t * y1 + 3 * u * t * t * y2 + t * t * t * y3,
+      ]);
+    }
+  }
+  pontos.push([segmentos.at(-1)[6], segmentos.at(-1)[7]]);
+  return pontos;
+}
+
+function distanciaAteSegmento(px, py, [ax, ay], [bx, by]) {
+  const dx = bx - ax;
+  const dy = by - ay;
+  const comprimento = dx * dx + dy * dy;
+  const t = comprimento ? Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / comprimento)) : 0;
+  return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
+}
+
+function distanciaAtePolilinha(px, py, pontos) {
+  let menor = Infinity;
+  for (let i = 1; i < pontos.length; i++) {
+    const d = distanciaAteSegmento(px, py, pontos[i - 1], pontos[i]);
+    if (d < menor) menor = d;
+  }
+  return menor;
+}
+
+/** cruzamentos de raio: par = fora, impar = dentro */
+function dentro(px, py, pontos) {
+  let d = false;
+  for (let i = 0, j = pontos.length - 1; i < pontos.length; j = i++) {
+    const [xi, yi] = pontos[i];
+    const [xj, yj] = pontos[j];
+    if (yi > py !== yj > py && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi) d = !d;
+  }
+  return d;
+}
+
+const CONTORNO_MACA = achatar(MACA);
+const POLI_FOLHA_D = achatar(FOLHA_DIREITA);
+const POLI_FOLHA_E = achatar(FOLHA_ESQUERDA);
 
 function misturar(a, b, t) {
+  const u = Math.max(0, Math.min(1, t));
   return [
-    Math.round(a[0] + (b[0] - a[0]) * t),
-    Math.round(a[1] + (b[1] - a[1]) * t),
-    Math.round(a[2] + (b[2] - a[2]) * t),
+    Math.round(a[0] + (b[0] - a[0]) * u),
+    Math.round(a[1] + (b[1] - a[1]) * u),
+    Math.round(a[2] + (b[2] - a[2]) * u),
   ];
 }
 
 /**
- * Desenha o anel de progresso. `escala` encolhe o desenho para caber na
- * zona segura do icone maskable (o launcher pode recortar as bordas).
+ * @param tamanho  lado do PNG em pixels
+ * @param ocupacao quanto do lado a marca ocupa. O launcher do Android recorta
+ *                 as bordas do icone maskable, entao la ela encolhe.
+ * @param cantos   raio dos cantos, em fracao do lado. O maskable vai quadrado
+ *                 porque quem arredonda e o sistema.
  */
-function desenhar(tamanho, escala = 1) {
-  const SS = 3; // supersampling: 3x3 amostras por pixel, para suavizar as bordas
+function desenhar(tamanho, ocupacao, cantos) {
+  const SS = 4; // 4x4 amostras por pixel: as curvas ficam limpas
   const rgba = new Uint8Array(tamanho * tamanho * 4);
-  const centro = tamanho / 2;
-  const raio = tamanho * 0.34 * escala;
-  const espessura = tamanho * 0.115 * escala;
-  const interno = raio - espessura / 2;
-  const externo = raio + espessura / 2;
-  const inicio = -Math.PI / 2;
-  const fim = inicio + Math.PI * 2 * 0.72; // anel em 72%
+  const escala = (tamanho * ocupacao) / 64;
+  const deslocamento = (tamanho - 64 * escala) / 2;
+  const raioCanto = tamanho * cantos;
+
+  // no espaco 64x64, para a espessura acompanhar a escala
+  const meiaMaca = 4 / 2;
+  const meioCheck = 4.5 / 2;
+  const meiaMedida = 2.6 / 2;
 
   for (let y = 0; y < tamanho; y++) {
     for (let x = 0; x < tamanho; x++) {
       let r = 0;
       let g = 0;
       let b = 0;
+      let a = 0;
 
       for (let sy = 0; sy < SS; sy++) {
         for (let sx = 0; sx < SS; sx++) {
           const px = x + (sx + 0.5) / SS;
           const py = y + (sy + 0.5) / SS;
 
-          const cor = misturar(FUNDO_TOPO, FUNDO_BASE, py / tamanho);
-          let [cr, cg, cb] = cor;
+          // fora do quadrado de cantos arredondados nao ha icone
+          const dx = Math.max(raioCanto - px, px - (tamanho - raioCanto), 0);
+          const dy = Math.max(raioCanto - py, py - (tamanho - raioCanto), 0);
+          if (Math.hypot(dx, dy) > raioCanto) continue;
 
-          const dx = px - centro;
-          const dy = py - centro;
-          const dist = Math.hypot(dx, dy);
+          // fundo: os dois verdes da marca na diagonal
+          let cor = misturar(VERDE, LIMA, (px + py) / (2 * tamanho));
 
-          if (dist >= interno && dist <= externo) {
-            let ang = Math.atan2(dy, dx);
-            if (ang < inicio) ang += Math.PI * 2;
-            [cr, cg, cb] = ang <= fim ? LIMA : TRILHA;
-          }
+          const mx = (px - deslocamento) / escala;
+          const my = (py - deslocamento) / escala;
 
-          r += cr;
-          g += cg;
-          b += cb;
+          const naMarca =
+            distanciaAtePolilinha(mx, my, CONTORNO_MACA) <= meiaMaca ||
+            distanciaAtePolilinha(mx, my, CHECK) <= meioCheck ||
+            MEDIDAS.some(([p, q]) => distanciaAteSegmento(mx, my, p, q) <= meiaMedida) ||
+            dentro(mx, my, POLI_FOLHA_D) ||
+            dentro(mx, my, POLI_FOLHA_E);
+
+          if (naMarca) cor = BRANCO;
+
+          r += cor[0];
+          g += cor[1];
+          b += cor[2];
+          a += 255;
         }
       }
 
       const n = SS * SS;
       const i = (y * tamanho + x) * 4;
-      rgba[i] = Math.round(r / n);
-      rgba[i + 1] = Math.round(g / n);
-      rgba[i + 2] = Math.round(b / n);
-      rgba[i + 3] = 255;
+      // divide pela cobertura, nao pelo total: senao a borda arredondada
+      // escurece em vez de ficar transparente
+      const cobertos = a / 255 || 1;
+      rgba[i] = Math.round(r / cobertos);
+      rgba[i + 1] = Math.round(g / cobertos);
+      rgba[i + 2] = Math.round(b / cobertos);
+      rgba[i + 3] = Math.round(a / n);
     }
   }
   return rgba;
 }
 
-for (const [arquivo, tamanho, escala] of [
-  ['icone-192.png', 192, 1],
-  ['icone-512.png', 512, 1],
-  ['icone-maskable-512.png', 512, 0.62],
+for (const [arquivo, tamanho, ocupacao, cantos] of [
+  ['icone-192.png', 192, 0.7, 0.22],
+  ['icone-512.png', 512, 0.7, 0.22],
+  ['icone-maskable-512.png', 512, 0.52, 0],
 ]) {
-  writeFileSync(join(saida, arquivo), montarPNG(tamanho, tamanho, desenhar(tamanho, escala)));
+  writeFileSync(join(saida, arquivo), montarPNG(tamanho, tamanho, desenhar(tamanho, ocupacao, cantos)));
   console.log(`gerado public/${arquivo} (${tamanho}x${tamanho})`);
 }

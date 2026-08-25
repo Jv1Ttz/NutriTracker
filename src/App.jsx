@@ -4,6 +4,7 @@ import { sincronizar } from './lib/sync.js';
 import { temSessaoGuardada, voltandoDeLogin, limparUrlDeLogin } from './lib/supabase.js';
 import { calcularMetas } from './lib/metas.js';
 import { chaveData } from './lib/util.js';
+import BemVindo from './components/BemVindo.jsx';
 import Onboarding from './components/Onboarding.jsx';
 import Hoje from './components/Hoje.jsx';
 import Buscar from './components/Buscar.jsx';
@@ -66,6 +67,7 @@ export default function App() {
   const [aba, setAba] = useState('hoje');
   const [data, setData] = useState(() => chaveData());
   const [refeicaoAlvo, setRefeicaoAlvo] = useState('almoco');
+  const [abriu, setAbriu] = useState(false);
 
   const metas = useMemo(() => {
     if (!estado.perfil) return null;
@@ -74,7 +76,7 @@ export default function App() {
   }, [estado.perfil, estado.metasManuais]);
 
   if (!estado.perfil) {
-    return <Onboarding />;
+    return abriu ? <Onboarding /> : <BemVindo onComecar={() => setAbriu(true)} />;
   }
 
   function irParaAdicionar(refeicao) {

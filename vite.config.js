@@ -18,7 +18,7 @@ export default defineConfig({
       manifest: {
         name: 'NutriTracker',
         short_name: 'Nutri',
-        description: 'Contador de calorias e macros com base TACO',
+        description: 'Conte. Equilibre. Transforme. Contador de calorias e macros com base TACO.',
         lang: 'pt-BR',
         theme_color: '#0f1512',
         background_color: '#0f1512',

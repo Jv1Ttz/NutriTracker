@@ -3,11 +3,20 @@
   --sup: #171f1b;
   --sup2: #1e2a24;
   --borda: #2a3831;
-  --txt: #e8f0eb;
+  --txt: #ebf5e9;
   --txt2: #93a89c;
   --txt3: #647a6e;
 
-  --kcal: #9ae66e;
+  /* Paleta da marca. Das cinco cores, tres entram direto num tema escuro:
+     os dois verdes e o quase-branco. As outras duas (#212121 e #757575) sao
+     tokens de tema claro - o #212121 vira a cor do texto SOBRE o verde, e o
+     cinza neutro nao entra porque os cinzas daqui puxam para o verde, o que
+     assenta melhor com o resto. */
+  --marca: #4caf50;
+  --marca2: #9bc34a;
+  --sobre-marca: #212121;
+
+  --kcal: var(--marca2);
   --prot: #6ec8ff;
   --carb: #ffc95c;
   --gord: #ff8f6e;
@@ -342,9 +351,9 @@ p {
 }
 
 .btn.principal {
-  background: var(--kcal);
-  color: #0d1a0b;
-  border-color: var(--kcal);
+  background: var(--marca2);
+  color: var(--sobre-marca);
+  border-color: var(--marca2);
   font-weight: 650;
 }
 
@@ -703,4 +712,76 @@ p {
 
 .mono {
   font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------- tela de abertura */
+
+.abertura {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 26px;
+  min-height: 100%;
+  padding-bottom: calc(22px + var(--base));
+}
+
+.abertura-topo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-top: 22px;
+}
+
+.abertura-nome {
+  font-size: 33px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  margin: 16px 0 4px;
+}
+
+.abertura-lema {
+  color: var(--marca2);
+  font-size: 14.5px;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+.abertura-pontos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.abertura-ponto {
+  display: flex;
+  gap: 13px;
+  align-items: flex-start;
+  padding: 13px 0;
+  border-top: 1px solid var(--borda);
+}
+
+.abertura-ponto:last-child {
+  border-bottom: 1px solid var(--borda);
+}
+
+.abertura-ponto svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+.abertura-ponto b {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.abertura-ponto .sub {
+  display: block;
+  line-height: 1.45;
+}
+
+.abertura-fim a {
+  color: var(--txt2);
 }
