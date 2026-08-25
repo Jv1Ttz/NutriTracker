@@ -41,7 +41,16 @@ const maisNovo = (a, b) => (!a ? b : !b ? a : a > b ? a : b);
 
 /* ------------------------------------------------------------- conversao */
 
-function itemParaLinha(userId, data, i) {
+/**
+ * Lapide e item vivo precisam sair com EXATAMENTE as mesmas chaves.
+ *
+ * O PostgREST decide as colunas do INSERT pelo primeiro objeto do lote: se a
+ * lapide omitir `fonte`, ela chega NULL numa coluna NOT NULL e o lote inteiro
+ * falha - justamente no caso comum de apagar um item e adicionar outro na
+ * mesma sincronizacao. Por isso a lapide e construida pela mesma funcao, em
+ * vez de ser um objeto escrito a mao parecido com o outro.
+ */
+export function itemParaLinha(userId, data, i) {
   return {
     user_id: userId,
     uid: i.uid,
@@ -56,6 +65,21 @@ function itemParaLinha(userId, data, i) {
     atualizado_em: i.atualizadoEm ?? agora(),
     removido_em: null,
   };
+}
+
+export function lapideDeItem(userId, uid, quando) {
+  const base = itemParaLinha(userId, '1970-01-01', {
+    uid,
+    refeicao: 'lanches',
+    alimentoId: '',
+    nome: '',
+    marca: null,
+    fonte: 'taco',
+    qtd: 1, // a coluna exige > 0, mesmo sem significado aqui
+    por100: {},
+    atualizadoEm: quando,
+  });
+  return { ...base, removido_em: quando };
 }
 
 function linhaParaItem(l) {
@@ -249,19 +273,7 @@ export async function sincronizar() {
     .map(([, r]) => itemParaLinha(userId, r.data, r.item));
   const itensMortos = Object.entries(fItens.tumulos)
     .filter(([, quando]) => quando > desde)
-    .map(([uid, quando]) => ({
-      user_id: userId,
-      uid,
-      // colunas NOT NULL precisam de valor mesmo na lapide
-      data: '1970-01-01',
-      refeicao: 'lanches',
-      alimento_id: '',
-      nome: '',
-      qtd: 1,
-      por100: {},
-      atualizado_em: quando,
-      removido_em: quando,
-    }));
+    .map(([uid, quando]) => lapideDeItem(userId, uid, quando));
   if (itensNovos.length || itensMortos.length) {
     enviar.push(supabase.from('itens_diario').upsert([...itensNovos, ...itensMortos]));
   }
