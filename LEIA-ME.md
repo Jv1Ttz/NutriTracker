@@ -123,10 +123,16 @@ depois no mesmo lugar.
 
 ### Sincronizar celular e PC (opcional)
 
-Em **Ajustes → Sincronizar entre aparelhos** dá para entrar com um e-mail e ter
-o mesmo diário nos dois. O login é por código de 6 dígitos, não por link: no
-celular um link abriria no navegador padrão, fora do app instalado, e a sessão
-ficaria no lugar errado.
+A conta é oferecida logo na abertura, depois do "Começar", e continua
+disponível em **Ajustes → Sincronizar entre aparelhos**. Dá para entrar com
+Google ou com e-mail e senha.
+
+Não usamos link mágico de propósito: no celular o link abre no navegador
+padrão, fora do app instalado, e a sessão fica no lugar errado. O OAuth do
+Google não tem esse problema porque o fluxo começa dentro do app e volta para
+a mesma origem. O login por código de 6 dígitos também está implementado, atrás
+de `VITE_LOGIN_EMAIL=1`, mas depende de SMTP próprio configurado no Supabase —
+sem isso o painel não deixa editar o template, e o template padrão manda link.
 
 O app continua offline-first — o `localStorage` segue sendo a fonte de verdade
 local e a sincronização acontece quando dá. Cada item do diário é uma linha

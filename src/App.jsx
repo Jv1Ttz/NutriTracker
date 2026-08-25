@@ -5,6 +5,7 @@ import { temSessaoGuardada, voltandoDeLogin, limparUrlDeLogin } from './lib/supa
 import { calcularMetas } from './lib/metas.js';
 import { chaveData } from './lib/util.js';
 import BemVindo from './components/BemVindo.jsx';
+import Acesso from './components/Acesso.jsx';
 import Onboarding from './components/Onboarding.jsx';
 import Hoje from './components/Hoje.jsx';
 import Buscar from './components/Buscar.jsx';
@@ -67,7 +68,10 @@ export default function App() {
   const [aba, setAba] = useState('hoje');
   const [data, setData] = useState(() => chaveData());
   const [refeicaoAlvo, setRefeicaoAlvo] = useState('almoco');
-  const [abriu, setAbriu] = useState(false);
+  // abertura -> acesso -> cadastro. So vale enquanto nao existe perfil:
+  // quem entra numa conta que ja tem perfil pula o cadastro, porque a
+  // sincronizacao traz o perfil e o App re-renderiza direto no app.
+  const [passo, setPasso] = useState('abertura');
 
   const metas = useMemo(() => {
     if (!estado.perfil) return null;
@@ -76,7 +80,9 @@ export default function App() {
   }, [estado.perfil, estado.metasManuais]);
 
   if (!estado.perfil) {
-    return abriu ? <Onboarding /> : <BemVindo onComecar={() => setAbriu(true)} />;
+    if (passo === 'abertura') return <BemVindo onComecar={() => setPasso('acesso')} />;
+    if (passo === 'acesso') return <Acesso onSeguir={() => setPasso('cadastro')} />;
+    return <Onboarding />;
   }
 
   function irParaAdicionar(refeicao) {

@@ -785,3 +785,59 @@ p {
 .abertura-fim a {
   color: var(--txt2);
 }
+
+/* --------------------------------------------------------- tela de acesso */
+
+.acesso {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: calc(22px + var(--base));
+}
+
+.acesso-topo {
+  text-align: center;
+  padding: 10px 0 22px;
+}
+
+.acesso-topo svg {
+  margin: 0 auto 12px;
+}
+
+.acesso-topo h1 {
+  font-size: 24px;
+  letter-spacing: -0.03em;
+  margin: 0 0 8px;
+}
+
+.acesso-topo .sub {
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* "ou com e-mail" com um filete de cada lado */
+.acesso-ou {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 16px;
+  color: var(--txt3);
+  font-size: 13px;
+}
+
+.acesso-ou::before,
+.acesso-ou::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--borda);
+}
+
+.acesso .aviso {
+  margin-top: 14px;
+}
+
+/* empurra o "sem conta" para o fim, separado do que e login */
+.acesso-fim {
+  margin-top: auto;
+  padding-top: 26px;
+}

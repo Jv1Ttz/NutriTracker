@@ -1,31 +1,38 @@
 import { useState, useEffect } from 'react';
+import { obterSupabase, configurado, loginPorEmail, limparUrlDeLogin } from '../lib/supabase.js';
 import {
-  obterSupabase,
-  configurado,
-  loginPorEmail,
-  limparUrlDeLogin,
-} from '../lib/supabase.js';
+  entrarComGoogle,
+  criarConta,
+  entrarComSenha,
+  pedirCodigo,
+  confirmarCodigo,
+  sair,
+  temSessao,
+  traduzirErro,
+} from '../lib/auth.js';
 import { sincronizar } from '../lib/sync.js';
 import { IconeGoogle } from './Icones.jsx';
 
 /**
  * Conta e sincronizacao, dentro dos Ajustes.
  *
- * O caminho principal e entrar com Google. Alem de ser um toque so, o fluxo
- * COMECA dentro do app e volta para a mesma origem - diferente do link por
- * e-mail, que comeca no aplicativo de e-mail e tende a abrir a sessao no
- * navegador padrao, fora do PWA instalado.
+ * Oferece o mesmo que a tela de acesso da primeira abertura - Google e
+ * e-mail com senha - para quem escolheu "continuar sem conta" la e mudou de
+ * ideia. As acoes vem todas de lib/auth.js, para as duas telas nao
+ * divergirem.
  *
- * O login por codigo de 6 digitos continua implementado, mas so aparece com
- * VITE_LOGIN_EMAIL=1: ele depende de o template do Supabase trazer
- * {{ .Token }}, e o Supabase so libera editar template com SMTP proprio.
+ * O login por codigo de 6 digitos continua atras de VITE_LOGIN_EMAIL=1:
+ * depende de o template do Supabase trazer {{ .Token }}, e o Supabase so
+ * libera editar template com SMTP proprio.
  */
 export default function Conta() {
-  const [sb, setSb] = useState(null);
   const [sessao, setSessao] = useState(null);
-  const [etapa, setEtapa] = useState('email'); // email | codigo
+  const [pronto, setPronto] = useState(false);
+  const [modo, setModo] = useState('entrar'); // entrar | criar
   const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
   const [codigo, setCodigo] = useState('');
+  const [esperandoCodigo, setEsperandoCodigo] = useState(false);
   const [ocupado, setOcupado] = useState(false);
   const [erro, setErro] = useState('');
   const [recado, setRecado] = useState('');
@@ -35,8 +42,11 @@ export default function Conta() {
     let desinscrever = () => {};
     obterSupabase().then((cliente) => {
       if (!cliente || !vivo) return;
-      setSb(cliente);
-      cliente.auth.getSession().then(({ data }) => vivo && setSessao(data.session));
+      cliente.auth.getSession().then(({ data }) => {
+        if (!vivo) return;
+        setSessao(data.session);
+        setPronto(true);
+      });
       const { data: sub } = cliente.auth.onAuthStateChange((_e, s) => vivo && setSessao(s));
       desinscrever = () => sub.subscription.unsubscribe();
     });
@@ -47,67 +57,26 @@ export default function Conta() {
   }, []);
 
   if (!configurado) return null;
-  const carregando = !sb;
 
-  async function tentar(fn, aoDarCerto) {
-    setOcupado(true);
+  function limpar() {
     setErro('');
     setRecado('');
+  }
+
+  async function rodar(fn) {
+    setOcupado(true);
+    limpar();
     try {
       await fn();
-      aoDarCerto?.();
     } catch (e) {
-      setErro(e.message);
+      setErro(traduzirErro(e.message));
     } finally {
       setOcupado(false);
     }
   }
 
-  const entrarComGoogle = () =>
-    tentar(async () => {
-      const { error } = await sb.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          // volta para a propria pagina; precisa estar na allow list do
-          // Supabase (Authentication > URL Configuration)
-          redirectTo: window.location.origin + window.location.pathname,
-        },
-      });
-      if (error) throw error;
-      // daqui o navegador sai para o Google e volta sozinho
-    });
-
-  const pedirCodigo = () =>
-    tentar(
-      async () => {
-        const { error } = await sb.auth.signInWithOtp({
-          email: email.trim(),
-          options: { shouldCreateUser: true },
-        });
-        if (error) throw error;
-      },
-      () => {
-        setEtapa('codigo');
-        setRecado('Código enviado. Olhe a caixa de entrada (e o spam).');
-      }
-    );
-
-  const confirmarCodigo = () =>
-    tentar(async () => {
-      const { error } = await sb.auth.verifyOtp({
-        email: email.trim(),
-        token: codigo.trim(),
-        type: 'email',
-      });
-      if (error) throw error;
-      const r = await sincronizar();
-      if (r.estado === 'ok') {
-        setRecado(`Sincronizado: ${r.baixados} recebidos, ${r.enviados} enviados.`);
-      }
-    });
-
   const sincronizarAgora = () =>
-    tentar(async () => {
+    rodar(async () => {
       const r = await sincronizar();
       setRecado(
         r.estado === 'ok'
@@ -116,15 +85,59 @@ export default function Conta() {
       );
     });
 
-  const sair = () =>
-    tentar(async () => {
-      const { error } = await sb.auth.signOut();
-      if (error) throw error;
+  const comGoogle = () =>
+    rodar(async () => {
+      const falha = await entrarComGoogle();
+      if (falha) setErro(falha);
+    });
+
+  const comSenha = () =>
+    rodar(async () => {
+      const falha =
+        modo === 'criar' ? await criarConta(email, senha) : await entrarComSenha(email, senha);
+      if (falha) return setErro(falha);
+      if (!(await temSessao())) {
+        return setErro(
+          'Conta criada, mas o servidor exige confirmar o e-mail antes de entrar. ' +
+            'Desligue "Confirm email" em Authentication → Providers → Email no Supabase.'
+        );
+      }
+      const r = await sincronizar();
+      if (r.estado === 'ok') {
+        setRecado(`Sincronizado: ${r.baixados} recebidos, ${r.enviados} enviados.`);
+      }
+    });
+
+  const enviarCodigo = () =>
+    rodar(async () => {
+      const falha = await pedirCodigo(email);
+      if (falha) return setErro(falha);
+      setEsperandoCodigo(true);
+      setRecado('Código enviado. Olhe a caixa de entrada (e o spam).');
+    });
+
+  const validarCodigo = () =>
+    rodar(async () => {
+      const falha = await confirmarCodigo(email, codigo);
+      if (falha) return setErro(falha);
+      const r = await sincronizar();
+      if (r.estado === 'ok') {
+        setRecado(`Sincronizado: ${r.baixados} recebidos, ${r.enviados} enviados.`);
+      }
+    });
+
+  const sairDaConta = () =>
+    rodar(async () => {
+      const falha = await sair();
+      if (falha) return setErro(falha);
       limparUrlDeLogin();
-      setEtapa('email');
+      setEsperandoCodigo(false);
+      setSenha('');
       setCodigo('');
       setRecado('Você saiu. Os dados continuam salvos neste aparelho.');
     });
+
+  const podeEnviar = email.includes('@') && senha.length >= 6 && !ocupado;
 
   return (
     <div className="cartao">
@@ -133,14 +146,14 @@ export default function Conta() {
       {sessao ? (
         <>
           <p className="sub" style={{ marginBottom: 12, lineHeight: 1.55 }}>
-            Conectado como <b>{sessao.user.email}</b>. Entre com essa mesma conta no outro
-            aparelho e os dois passam a compartilhar diário, pesos e alimentos cadastrados.
+            Conectado como <b>{sessao.user.email}</b>. Entre com essa mesma conta no outro aparelho
+            e os dois passam a compartilhar diário, pesos e alimentos cadastrados.
           </p>
           <div className="linha">
             <button className="btn principal" onClick={sincronizarAgora} disabled={ocupado}>
               {ocupado ? 'Sincronizando...' : 'Sincronizar agora'}
             </button>
-            <button className="btn" onClick={sair} disabled={ocupado}>
+            <button className="btn" onClick={sairDaConta} disabled={ocupado}>
               Sair
             </button>
           </div>
@@ -148,71 +161,109 @@ export default function Conta() {
       ) : (
         <>
           <p className="sub" style={{ marginBottom: 14, lineHeight: 1.55 }}>
-            Opcional. Sem conta, o app segue funcionando offline e os dados ficam só neste
-            aparelho — que é como ele nasceu. Com conta, o mesmo diário aparece no celular e no
-            PC.
+            Opcional. Sem conta o app segue funcionando offline e os dados ficam só neste aparelho
+            — que é como ele nasceu. Com conta, o mesmo diário aparece no celular e no PC.
           </p>
 
           <button
             className="btn bloco"
-            onClick={entrarComGoogle}
-            disabled={ocupado || carregando}
+            onClick={comGoogle}
+            disabled={ocupado || !pronto}
             style={{ gap: 10 }}
           >
             <IconeGoogle />
-            {ocupado ? 'Abrindo...' : 'Entrar com Google'}
+            Continuar com Google
           </button>
 
-          {loginPorEmail &&
-            (etapa === 'email' ? (
-              <div className="campo" style={{ marginTop: 16 }}>
-                <label htmlFor="conta-email">Ou entre com seu e-mail</label>
-                <div className="linha">
-                  <input
-                    id="conta-email"
-                    type="email"
-                    inputMode="email"
-                    autoComplete="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="voce@email.com"
-                  />
-                  <button
-                    className="btn"
-                    onClick={pedirCodigo}
-                    disabled={ocupado || carregando || !email.includes('@')}
-                    style={{ flex: '0 0 120px' }}
-                  >
-                    {ocupado ? '...' : 'Enviar código'}
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="campo" style={{ marginTop: 16 }}>
-                <label htmlFor="conta-codigo">Código de 6 dígitos</label>
-                <div className="linha">
-                  <input
-                    id="conta-codigo"
-                    inputMode="numeric"
-                    autoComplete="one-time-code"
-                    value={codigo}
-                    onChange={(e) => setCodigo(e.target.value)}
-                    placeholder="000000"
-                  />
-                  <button
-                    className="btn"
-                    onClick={confirmarCodigo}
-                    disabled={ocupado || carregando || codigo.trim().length < 6}
-                    style={{ flex: '0 0 120px' }}
-                  >
-                    {ocupado ? '...' : 'Entrar'}
-                  </button>
-                </div>
-                <button className="sub" onClick={() => setEtapa('email')} style={{ padding: 0 }}>
-                  usar outro e-mail
-                </button>
-              </div>
+          <div className="acesso-ou">
+            <span>ou com e-mail</span>
+          </div>
+
+          <div className="chips" style={{ marginBottom: 12 }}>
+            {[
+              ['entrar', 'Entrar'],
+              ['criar', 'Criar conta'],
+            ].map(([id, rotulo]) => (
+              <button
+                key={id}
+                className={`chip ${modo === id ? 'marcado' : ''}`}
+                onClick={() => {
+                  setModo(id);
+                  limpar();
+                }}
+              >
+                {rotulo}
+              </button>
             ))}
+          </div>
+
+          <div className="campo">
+            <label htmlFor="conta-email">E-mail</label>
+            <input
+              id="conta-email"
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="voce@email.com"
+            />
+          </div>
+
+          <div className="campo">
+            <label htmlFor="conta-senha">Senha</label>
+            <input
+              id="conta-senha"
+              type="password"
+              autoComplete={modo === 'criar' ? 'new-password' : 'current-password'}
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+              placeholder="pelo menos 6 caracteres"
+              onKeyDown={(e) => e.key === 'Enter' && podeEnviar && comSenha()}
+            />
+          </div>
+
+          <button className="btn principal bloco" onClick={comSenha} disabled={!podeEnviar}>
+            {ocupado ? 'Um instante...' : modo === 'criar' ? 'Criar conta' : 'Entrar'}
+          </button>
+
+          {loginPorEmail && (
+            <div className="campo" style={{ marginTop: 16 }}>
+              <label htmlFor="conta-codigo">
+                {esperandoCodigo ? 'Código de 6 dígitos' : 'Ou receba um código por e-mail'}
+              </label>
+              <div className="linha">
+                {esperandoCodigo ? (
+                  <>
+                    <input
+                      id="conta-codigo"
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
+                      value={codigo}
+                      onChange={(e) => setCodigo(e.target.value)}
+                      placeholder="000000"
+                    />
+                    <button
+                      className="btn"
+                      onClick={validarCodigo}
+                      disabled={ocupado || codigo.trim().length < 6}
+                      style={{ flex: '0 0 110px' }}
+                    >
+                      Validar
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    className="btn bloco"
+                    onClick={enviarCodigo}
+                    disabled={ocupado || !email.includes('@')}
+                  >
+                    Enviar código para {email || 'o e-mail acima'}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
         </>
       )}
 
