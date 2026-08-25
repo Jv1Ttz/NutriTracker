@@ -169,10 +169,12 @@ export function imc(peso, alturaCm) {
 }
 
 export function faixaIMC(valor) {
-  if (valor < 18.5) return { label: 'Abaixo do peso', cor: '#5aa9e6' };
-  if (valor < 25) return { label: 'Peso normal', cor: '#7bd88f' };
-  if (valor < 30) return { label: 'Sobrepeso', cor: '#f2c14e' };
-  if (valor < 35) return { label: 'Obesidade grau I', cor: '#f08c4b' };
-  if (valor < 40) return { label: 'Obesidade grau II', cor: '#e8624a' };
-  return { label: 'Obesidade grau III', cor: '#d94141' };
+  // escurecidas para o tema claro: as versoes anteriores eram feitas para
+  // brilhar sobre fundo escuro e aqui nao passariam de 2:1
+  if (valor < 18.5) return { label: 'Abaixo do peso', cor: '#1565c0' };
+  if (valor < 25) return { label: 'Peso normal', cor: '#2e7d32' };
+  if (valor < 30) return { label: 'Sobrepeso', cor: '#96590a' };
+  if (valor < 35) return { label: 'Obesidade grau I', cor: '#bd5b13' };
+  if (valor < 40) return { label: 'Obesidade grau II', cor: '#c1401c' };
+  return { label: 'Obesidade grau III', cor: '#c62828' };
 }

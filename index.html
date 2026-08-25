@@ -6,9 +6,9 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no"
     />
-    <meta name="theme-color" content="#0f1512" />
+    <meta name="theme-color" content="#ebf5e9" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Nutri" />
     <!-- A aba do navegador nao le o manifesto do PWA: precisa destes.
          SVG para quem suporta (nitido em qualquer tamanho), PNG de reserva
@@ -17,6 +17,26 @@
     <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png" />
     <link rel="apple-touch-icon" href="./icone-192.png" />
     <title>NutriTracker</title>
+    <meta
+      name="description"
+      content="Conte. Equilibre. Transforme. Contador de calorias e macros com a tabela TACO, leitor de código de barras e acompanhamento de peso. Funciona offline."
+    />
+
+    <!-- Previa quando o link e compartilhado. A og:image precisa ser URL
+         absoluta: os robos do WhatsApp e companhia nao resolvem caminho
+         relativo. Se um dia sair do dominio do Vercel, troque aqui. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="NutriTracker" />
+    <meta
+      property="og:description"
+      content="Conte. Equilibre. Transforme. Contador de calorias e macros com a tabela TACO, offline."
+    />
+    <meta property="og:url" content="https://nutri-tracker-theta.vercel.app/" />
+    <meta property="og:image" content="https://nutri-tracker-theta.vercel.app/og.jpg" />
+    <meta property="og:image:width" content="1150" />
+    <meta property="og:image:height" content="702" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
     <div id="root"></div>

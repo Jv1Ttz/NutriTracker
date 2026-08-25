@@ -1,26 +1,33 @@
 :root {
-  --bg: #0f1512;
-  --sup: #171f1b;
-  --sup2: #1e2a24;
-  --borda: #2a3831;
-  --txt: #ebf5e9;
-  --txt2: #93a89c;
-  --txt3: #647a6e;
+  /* Tema claro, que e como a paleta da marca nasceu: #EBF5E9 no fundo,
+     #212121 no texto. O cartao vai branco para se destacar do fundo, que
+     tem um leve tom verde. */
+  --bg: #ebf5e9;
+  --sup: #ffffff;
+  --sup2: #f3f8f1;
+  --borda: #d5e4d2;
+  --txt: #212121;
+  --txt2: #5c6b5e;
+  /* a paleta traz #757575 aqui, mas ele da 4.12:1 sobre o fundo - abaixo do
+     minimo de 4.5 para texto. Um tom mais escuro resolve sem mudar o efeito */
+  --txt3: #6b6b6b;
 
-  /* Paleta da marca. Das cinco cores, tres entram direto num tema escuro:
-     os dois verdes e o quase-branco. As outras duas (#212121 e #757575) sao
-     tokens de tema claro - o #212121 vira a cor do texto SOBRE o verde, e o
-     cinza neutro nao entra porque os cinzas daqui puxam para o verde, o que
-     assenta melhor com o resto. */
+  /* Cores DA MARCA, para a logo. Ficam claras de proposito: e assim que a
+     arte original foi desenhada, e o traco grosso aguenta. Nao use em texto
+     nem em barra de progresso - para isso existem as funcionais abaixo. */
   --marca: #4caf50;
   --marca2: #9bc34a;
   --sobre-marca: #212121;
 
-  --kcal: var(--marca2);
-  --prot: #6ec8ff;
-  --carb: #ffc95c;
-  --gord: #ff8f6e;
-  --perigo: #ff6b6b;
+  /* Cores FUNCIONAIS, medidas contra o fundo e contra o cartao. As versoes
+     do tema escuro eram claras para brilhar sobre #0f1512 e aqui davam de
+     1.4 a 2.5:1 - sumiam. Estas sao as mesmas matizes, escurecidas ate
+     passarem em 4.5:1, que e o minimo para texto. */
+  --kcal: #2e7d32; /* 4.58 - serve de texto e de anel */
+  --prot: #1565c0; /* 5.14 */
+  --carb: #96590a; /* 5.03 */
+  --gord: #bd3d16; /* 4.88 */
+  --perigo: #c62828; /* 5.03 */
 
   --r: 16px;
   --r-sm: 10px;
@@ -28,7 +35,7 @@
   --base: env(safe-area-inset-bottom, 0px);
   --altura-tabs: 62px;
 
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 * {
@@ -117,7 +124,7 @@ p {
   z-index: 40;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  background: rgba(15, 21, 18, 0.94);
+  background: rgba(235, 245, 233, 0.94);
   backdrop-filter: blur(12px);
   border-top: 1px solid var(--borda);
   padding-bottom: var(--base);
@@ -347,7 +354,9 @@ p {
 }
 
 .btn:active {
-  filter: brightness(1.35);
+  /* no tema escuro o toque CLAREAVA o botao; no claro isso o lava.
+     Escurecer e o equivalente visual. */
+  filter: brightness(0.93);
 }
 
 .btn.principal {
@@ -359,7 +368,7 @@ p {
 
 .btn.perigo {
   color: var(--perigo);
-  border-color: #4a2626;
+  border-color: #e8bcbc;
 }
 
 .btn.bloco {
@@ -460,7 +469,7 @@ p {
 
 .opcao.marcada {
   border-color: var(--kcal);
-  background: #1b2a1a;
+  background: #e6f4e7;
 }
 
 .opcao-txt {
@@ -689,18 +698,18 @@ p {
 .aviso {
   padding: 12px 14px;
   border-radius: var(--r-sm);
-  background: #2a2415;
-  border: 1px solid #4a3f1c;
-  color: #f0d99a;
+  background: #fdf6e3;
+  border: 1px solid #e5d5a5;
+  color: #7a5a00;
   font-size: 13px;
   line-height: 1.5;
   margin-bottom: 14px;
 }
 
 .aviso.info {
-  background: #16232b;
-  border-color: #244050;
-  color: #a9d0e6;
+  background: #e9f2fc;
+  border-color: #c2dcf5;
+  color: #14538f;
 }
 
 .centro-txt {
