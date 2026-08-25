@@ -113,7 +113,7 @@ export default function Buscar({ estado, data, refeicaoInicial, onDepoisDeAdicio
         <div className="centro-txt">
           Busque pelo nome do alimento.
           <br />
-          São 640 itens embutidos — a tabela TACO e uma seleção da USDA — e o leitor de código de
+          São 633 itens embutidos — a tabela TACO e uma seleção da USDA — e o leitor de código de
           barras acha os industrializados.
         </div>
       )}

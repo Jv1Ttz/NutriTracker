@@ -113,7 +113,7 @@
   },
   {
     "id": "usda-169081",
-    "nome": "Cream cheese, requeijão cremoso",
+    "nome": "Cream cheese",
     "categoria": "Leite e derivados",
     "kcal": 295,
     "prot": 7.1,
@@ -126,38 +126,6 @@
     "colesterol": 90,
     "fonte": "usda",
     "origem": "USDA FDC 169081 (Cheese spread, cream cheese base)"
-  },
-  {
-    "id": "usda-169700",
-    "nome": "Cuscuz marroquino, cozido",
-    "categoria": "Cereais e derivados",
-    "kcal": 112,
-    "prot": 3.79,
-    "carb": 23.22,
-    "gord": 0.16,
-    "fibra": 1.4,
-    "sodio": 5,
-    "calcio": 8,
-    "ferro": 0.38,
-    "colesterol": 0,
-    "fonte": "usda",
-    "origem": "USDA FDC 169700 (Couscous, cooked)"
-  },
-  {
-    "id": "usda-169699",
-    "nome": "Cuscuz marroquino, cru",
-    "categoria": "Cereais e derivados",
-    "kcal": 376,
-    "prot": 12.76,
-    "carb": 77.43,
-    "gord": 0.64,
-    "fibra": 5,
-    "sodio": 10,
-    "calcio": 24,
-    "ferro": 1.08,
-    "colesterol": 0,
-    "fonte": "usda",
-    "origem": "USDA FDC 169699 (Couscous, dry)"
   },
   {
     "id": "usda-168410",
@@ -350,22 +318,6 @@
     "colesterol": 0,
     "fonte": "usda",
     "origem": "USDA FDC 172446 (Soymilk, original and vanilla, unfortified)"
-  },
-  {
-    "id": "usda-169640",
-    "nome": "Mel",
-    "categoria": "Produtos açucarados",
-    "kcal": 304,
-    "prot": 0.3,
-    "carb": 82.4,
-    "gord": 0,
-    "fibra": 0.2,
-    "sodio": 4,
-    "calcio": 6,
-    "ferro": 0.42,
-    "colesterol": 0,
-    "fonte": "usda",
-    "origem": "USDA FDC 169640 (Honey)"
   },
   {
     "id": "usda-171711",

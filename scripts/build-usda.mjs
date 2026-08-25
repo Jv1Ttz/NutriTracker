@@ -83,8 +83,6 @@ const SELECAO = [
   [168874, 'Quinoa, crua', 'Cereais e derivados'],
   [168917, 'Quinoa, cozida', 'Cereais e derivados'],
   [170286, 'Trigo sarraceno, cru', 'Cereais e derivados'],
-  [169699, 'Cuscuz marroquino, cru', 'Cereais e derivados'],
-  [169700, 'Cuscuz marroquino, cozido', 'Cereais e derivados'],
 
   // --- nozes e sementes ---
   [170554, 'Chia, semente, seca', 'Nozes e sementes'],
@@ -98,7 +96,7 @@ const SELECAO = [
   [170894, 'Iogurte grego, natural, desnatado', 'Leite e derivados'],
   [171304, 'Iogurte grego, natural, integral', 'Leite e derivados'],
   [170904, 'Kefir, natural, semidesnatado', 'Leite e derivados'],
-  [169081, 'Cream cheese, requeijão cremoso', 'Leite e derivados'],
+  [169081, 'Cream cheese', 'Leite e derivados'],
   [167703, 'Queijo cottage, 1% de gordura', 'Leite e derivados'],
 
   // --- bebidas vegetais ---
@@ -149,7 +147,6 @@ const SELECAO = [
   [171986, 'Atum claro, em conserva na água, sem sal', 'Pescados e frutos do mar'],
 
   // --- acucares e outros ---
-  [169640, 'Mel', 'Produtos açucarados'],
   [169593, 'Cacau em pó, sem açúcar', 'Produtos açucarados'],
   [172241, 'Vinagre balsâmico', 'Miscelâneas'],
 ];
