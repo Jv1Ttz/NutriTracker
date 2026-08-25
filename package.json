@@ -9,8 +9,9 @@
     "dev:https": "node scripts/dev-https.mjs",
     "build": "vite build",
     "preview": "vite preview --host",
-    "build:taco": "node scripts/build-taco.mjs",
-    "build:icons": "node scripts/build-icons.mjs"
+    "build:icons": "node scripts/build-icons.mjs",
+    "build:alimentos": "node scripts/build-alimentos.mjs",
+    "build:usda": "node scripts/build-usda.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.4",

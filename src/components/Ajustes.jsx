@@ -297,8 +297,10 @@ export default function Ajustes({ estado, metas }) {
       <div className="cartao">
         <div className="cartao-titulo">Sobre os números</div>
         <p className="sub" style={{ lineHeight: 1.55 }}>
-          Os alimentos vêm da <b>TACO 4ª edição</b> (UNICAMP, 2011) e do{' '}
-          <b>Open Food Facts</b> para produtos com código de barras. A meta calórica usa a equação
+          Os alimentos vêm da <b>TACO 4ª edição</b> (UNICAMP, 2011), de uma seleção da{' '}
+          <b>USDA FoodData Central</b> com o que a TACO não cobre — quinoa, chia, iogurte grego,
+          leites vegetais, suplementos — e do <b>Open Food Facts</b> para produtos com código de
+          barras. A meta calórica usa a equação
           de <b>Mifflin-St Jeor</b>, que é uma estimativa populacional: o seu gasto real pode variar
           uns 10% para cima ou para baixo. Quem dá a palavra final é a balança ao longo das semanas.
           Isto aqui é uma ferramenta de acompanhamento, não substitui nutricionista ou médico.

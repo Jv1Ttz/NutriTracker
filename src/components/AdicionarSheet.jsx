@@ -43,7 +43,9 @@ export default function AdicionarSheet({
 
       {alimento.origem && (
         <div className="aviso info" style={{ marginTop: 12 }}>
-          A TACO não traz os valores desse item. Usei os dados de: {alimento.origem}.
+          {alimento.fonte === 'usda'
+            ? `Esse item não está na TACO. Os valores vêm da ${alimento.origem}.`
+            : `A TACO não traz os valores desse item. Usei os dados de: ${alimento.origem}.`}
         </div>
       )}
 

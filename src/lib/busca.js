@@ -78,7 +78,10 @@ export function buscar(consulta, customs = [], limite = 60) {
     // "peito de frango" tem que trazer o peito antes do file a milanesa,
     // e "ovos" tem que trazer o ovo antes do macarrao com ovos
     for (const t of termos) if (alvo.includes(t)) pontos += 6;
-    if (a.fonte !== 'taco') pontos += 15; // o que o usuario cadastrou vem antes
+    // so o que E do usuario sobe: alimento cadastrado por ele ou produto que
+    // ele escaneou. A USDA e base embutida como a TACO, e concorre de igual
+    // para igual - senao quinoa apareceria na frente de arroz
+    if (a.fonte === 'custom' || a.fonte === 'off') pontos += 15;
     pontos -= alvo.length * 0.15; // nomes curtos e mais especificos primeiro
 
     achados.push({ alimento: a, pontos });

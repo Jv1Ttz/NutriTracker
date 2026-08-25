@@ -1,6 +1,14 @@
 /**
- * Converte a TACO bruta (4a edicao, UNICAMP - 597 alimentos) para o formato
- * enxuto que o app consome. Roda com: npm run build:taco
+ * Monta a base de alimentos do app juntando as fontes embutidas, e grava em
+ * src/data/alimentos.json. Roda com: npm run build:alimentos
+ *
+ * Sao duas fontes hoje:
+ *   TACO 4a edicao (UNICAMP)  - 597 alimentos brasileiros, de scripts/TACO-bruto.json
+ *   USDA FoodData Central     - selecao curada do que falta na TACO, de
+ *                               scripts/usda-selecao.json (ver build-usda.mjs)
+ *
+ * Os ids sao prefixados por fonte (taco-, usda-) para nunca colidirem, e o
+ * campo `fonte` acompanha cada alimento ate a tela.
  *
  * Na TACO os valores sao SEMPRE por 100 g de parte comestivel.
  * Marcadores especiais da tabela:
@@ -74,6 +82,17 @@ for (const a of alimentos) {
   a.gord ??= 0;
 }
 
+/* ------------------------------------------------------- selecao da USDA */
+
+// Ja vem no formato do app, so falta o campo de busca. E dominio publico,
+// entao entra embutida sem atrito de licenca.
+const usda = JSON.parse(readFileSync(join(aqui, 'usda-selecao.json'), 'utf-8')).map((a) => ({
+  ...a,
+  busca: normalizar(a.nome),
+}));
+
+alimentos = [...alimentos, ...usda];
+
 const categorias = [...new Set(alimentos.map((a) => a.categoria))].sort();
 
 writeFileSync(
@@ -82,7 +101,10 @@ writeFileSync(
   'utf-8'
 );
 
-console.log(`OK: ${alimentos.length} alimentos em ${categorias.length} categorias`);
+console.log(
+  `OK: ${alimentos.length} alimentos em ${categorias.length} categorias ` +
+    `(${alimentos.length - usda.length} da TACO, ${usda.length} da USDA)`
+);
 if (removidos.length) {
   console.log(`\nRemovidos por falta de dados na TACO (${removidos.length}):`);
   for (const r of removidos) console.log(`  - ${r.id} ${r.nome}`);

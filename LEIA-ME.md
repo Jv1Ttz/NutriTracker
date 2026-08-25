@@ -66,7 +66,7 @@ internet** (só a busca por código de barras precisa de rede).
 |---|---|
 | **Abertura** | Aparece uma vez, antes do cadastro: o que o app faz e onde seus dados ficam. |
 | **Hoje** | Anel de calorias, barras de macro, as 4 refeições. Navega entre os dias nas setas. Toque em qualquer item para editar ou apagar. |
-| **Adicionar** | Busca nos 595 alimentos da TACO, leitor de código de barras, "o que você mais come" e cadastro manual. |
+| **Adicionar** | Busca nos 640 alimentos embutidos (TACO + seleção da USDA), leitor de código de barras, "o que você mais come" e cadastro manual. |
 | **Peso** | Registro diário, gráfico com média móvel de 7 dias e sugestão automática de ajuste nas calorias. |
 | **Ajustes** | Editar perfil, fixar metas na mão, ver seus alimentos cadastrados, backup e restauração. |
 
@@ -87,6 +87,12 @@ internet** (só a busca por código de barras precisa de rede).
   Quatro itens da tabela original vêm sem valores (marcados com `*`); os dois mais
   comuns (leite integral e leite desnatado) foram completados com dados do USDA e
   ficam marcados no app. Os outros dois foram removidos.
+- **USDA FoodData Central (SR Legacy)** — 45 alimentos escolhidos a dedo para
+  cobrir o que a TACO, de 2011, não tem: quinoa, chia, iogurte grego, leites
+  vegetais, pasta de amendoim, tofu, homus e suplementos de proteína. É domínio
+  público, então pode ser embutida sem atrito de licença. Os nomes em português
+  e a categoria são nossos; os números saem do CSV como estão, e cada item
+  guarda a descrição original da USDA no campo `origem`.
 - **Open Food Facts** — base aberta e colaborativa de produtos industrializados,
   consultada por código de barras. É colaborativa, então a qualidade varia:
   confira o rótulo quando o número parecer estranho.

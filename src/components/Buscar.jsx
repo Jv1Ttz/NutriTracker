@@ -21,6 +21,7 @@ function Resultado({ alimento, onEscolher }) {
           {alimento.marca || alimento.categoria}
         </div>
       </div>
+      {alimento.fonte === 'usda' && <span className="tag usda">USDA</span>}
       {alimento.fonte === 'off' && <span className="tag off">barras</span>}
       {alimento.fonte === 'custom' && <span className="tag custom">meu</span>}
     </button>
@@ -112,7 +113,8 @@ export default function Buscar({ estado, data, refeicaoInicial, onDepoisDeAdicio
         <div className="centro-txt">
           Busque pelo nome do alimento.
           <br />
-          São 595 itens da tabela TACO, e o leitor de código de barras acha os industrializados.
+          São 640 itens embutidos — a tabela TACO e uma seleção da USDA — e o leitor de código de
+          barras acha os industrializados.
         </div>
       )}
 
