@@ -9,6 +9,7 @@ import {
 } from '../lib/db.js';
 import { FATORES, OBJETIVOS, calcularMetas } from '../lib/metas.js';
 import Conta from './Conta.jsx';
+import { obterSupabase } from '../lib/supabase.js';
 import { chaveData, inteiro } from '../lib/util.js';
 import { IconeLixo } from './Icones.jsx';
 
@@ -61,9 +62,18 @@ export default function Ajustes({ estado, metas }) {
     e.target.value = '';
   }
 
-  function zerar() {
-    if (!confirm('Isso apaga perfil, diário, pesos e alimentos cadastrados. Tem certeza?')) return;
+  async function zerar() {
+    if (!confirm('Isso apaga perfil, diário, pesos e alimentos cadastrados deste aparelho, e sai da conta. Tem certeza?')) return;
     if (!confirm('Última chance: não dá para desfazer. Apagar mesmo?')) return;
+    // Sair da conta ANTES de apagar. Mantendo a sessão, a sincronização
+    // seguinte baixaria tudo de volta e o botão simplesmente não teria
+    // efeito - o usuário mandaria apagar e veria os dados reaparecerem.
+    try {
+      const sb = await obterSupabase();
+      await sb?.auth.signOut();
+    } catch (e) {
+      console.warn('Não consegui encerrar a sessão:', e.message);
+    }
     apagarTudo();
   }
 
@@ -269,6 +279,12 @@ export default function Ajustes({ estado, metas }) {
       <button className="btn perigo bloco" onClick={zerar}>
         Apagar todos os dados
       </button>
+
+      <p className="sub" style={{ textAlign: 'center', marginTop: 18 }}>
+        <a href="/privacidade.html">Política de Privacidade</a>
+        {' · '}
+        <a href="/termos.html">Termos de Serviço</a>
+      </p>
     </>
   );
 }
