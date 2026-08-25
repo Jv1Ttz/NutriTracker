@@ -12,7 +12,7 @@ const CAMPOS = [
 ];
 
 /** Cadastro manual: para receita própria ou produto que não está em base nenhuma. */
-export default function CriarAlimento({ onFechar, onCriado }) {
+export default function CriarAlimento({ onFechar, onCriado, codigoInicial = null }) {
   const [nome, setNome] = useState('');
   const [marca, setMarca] = useState('');
   const [porcao, setPorcao] = useState('');
@@ -32,6 +32,8 @@ export default function CriarAlimento({ onFechar, onCriado }) {
       nome: nome.trim(),
       marca: marca.trim() || null,
       categoria: 'Meus alimentos',
+      // guardado junto: da proxima vez o leitor acha sem consultar ninguem
+      ...(codigoInicial ? { codigo: codigoInicial } : {}),
       busca: normalizar(`${nome} ${marca}`),
       kcal: n(vals.kcal),
       prot: n(vals.prot),
@@ -50,6 +52,13 @@ export default function CriarAlimento({ onFechar, onCriado }) {
     <Folha onFechar={onFechar} rotulo="Cadastrar alimento">
       <h2>Novo alimento</h2>
       <p className="sub">Copie os valores do rótulo, na coluna de 100 g.</p>
+
+      {codigoInicial && (
+        <div className="aviso info" style={{ marginTop: 12 }}>
+          Vai ficar salvo no código <b>{codigoInicial}</b>. Da próxima vez que você escanear essa
+          embalagem, o app acha na hora — sem internet.
+        </div>
+      )}
 
       <div className="campo" style={{ marginTop: 14 }}>
         <label htmlFor="n">Nome</label>

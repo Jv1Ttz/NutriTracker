@@ -70,7 +70,18 @@ function converter(p) {
 export async function buscarPorCodigo(codigo, sinal) {
   const url = `${BASE}/api/v2/product/${encodeURIComponent(codigo)}.json?fields=${CAMPOS}`;
   const r = await fetch(url, { signal: sinal });
+
+  // 404 aqui quer dizer "esse codigo nao esta cadastrado", que e uma resposta
+  // legitima e comum - a base e colaborativa e nao tem tudo. Tratar como erro
+  // fazia o app dizer "falha ao consultar, confira a internet" para quem
+  // estava com a internet perfeita.
+  if (r.status === 404) return null;
+
+  if (r.status >= 500) {
+    throw new Error('O Open Food Facts está fora do ar no momento');
+  }
   if (!r.ok) throw new Error(`Open Food Facts respondeu ${r.status}`);
+
   const dados = await r.json();
   if (dados.status !== 1 || !dados.product) return null;
   return converter(dados.product);

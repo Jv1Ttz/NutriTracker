@@ -33,6 +33,7 @@ export default function Buscar({ estado, data, refeicaoInicial, onDepoisDeAdicio
   const [escolhido, setEscolhido] = useState(null);
   const [scanner, setScanner] = useState(false);
   const [criando, setCriando] = useState(false);
+  const [codigoParaCadastrar, setCodigoParaCadastrar] = useState(null);
   const [produtos, setProdutos] = useState([]);
   const [buscandoOff, setBuscandoOff] = useState(false);
   const campoRef = useRef(null);
@@ -182,14 +183,24 @@ export default function Buscar({ estado, data, refeicaoInicial, onDepoisDeAdicio
             setScanner(false);
             setEscolhido(p);
           }}
+          onCadastrar={(codigo) => {
+            setScanner(false);
+            setCodigoParaCadastrar(codigo);
+            setCriando(true);
+          }}
         />
       )}
 
       {criando && (
         <CriarAlimento
-          onFechar={() => setCriando(false)}
+          codigoInicial={codigoParaCadastrar}
+          onFechar={() => {
+            setCriando(false);
+            setCodigoParaCadastrar(null);
+          }}
           onCriado={(a) => {
             setCriando(false);
+            setCodigoParaCadastrar(null);
             setEscolhido(a);
           }}
         />

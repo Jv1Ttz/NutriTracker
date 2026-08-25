@@ -14,10 +14,12 @@ const FORMATOS_NATIVOS = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128'];
  * A camera so funciona em contexto seguro: https ou localhost. Pelo IP da
  * rede local em http o navegador bloqueia - ver `npm run dev:https`.
  */
-export default function Scanner({ onFechar, onProduto }) {
+export default function Scanner({ onFechar, onProduto, onCadastrar }) {
   const videoRef = useRef(null);
   const [estado, setEstado] = useState('iniciando'); // iniciando | lendo | consultando | erro
   const [erro, setErro] = useState('');
+  // codigo lido que nao existe em base nenhuma: vira convite para cadastrar
+  const [semCadastro, setSemCadastro] = useState('');
   const [manual, setManual] = useState('');
   const jaLeu = useRef(false);
   // guardado em ref para o efeito da camera nao reiniciar a cada render
@@ -49,10 +51,7 @@ export default function Scanner({ onFechar, onProduto }) {
         if (produto) {
           aoAchar.current(produto);
         } else {
-          setErro(
-            `O código ${codigo} não está no Open Food Facts. ` +
-              'Dá para cadastrar o produto manualmente pelo botão "Cadastrar um alimento meu".'
-          );
+          setSemCadastro(codigo);
           setEstado('erro');
         }
       } catch (e) {
@@ -173,7 +172,7 @@ export default function Scanner({ onFechar, onProduto }) {
       const produto = await buscarPorCodigo(codigo);
       if (produto) aoAchar.current(produto);
       else {
-        setErro(`O código ${codigo} não está no Open Food Facts.`);
+        setSemCadastro(codigo);
         setEstado('erro');
       }
     } catch (err) {
@@ -196,7 +195,25 @@ export default function Scanner({ onFechar, onProduto }) {
 
       {estado === 'iniciando' && <p className="centro-txt">Abrindo a câmera...</p>}
       {estado === 'consultando' && <p className="centro-txt">Procurando o produto...</p>}
-      {estado === 'erro' && (
+      {estado === 'erro' && semCadastro && (
+        <div className="aviso info" style={{ marginTop: 14 }}>
+          <b>Esse produto ainda não está em nenhuma base.</b>
+          <br />O código {semCadastro} foi lido certo — ele é que não existe no Open Food Facts,
+          que é colaborativo e não tem tudo. Cadastre uma vez, copiando do rótulo, e o app passa a
+          reconhecer essa embalagem para sempre, mesmo sem internet.
+          {onCadastrar && (
+            <button
+              className="btn principal bloco"
+              style={{ marginTop: 12 }}
+              onClick={() => onCadastrar(semCadastro)}
+            >
+              Cadastrar este produto
+            </button>
+          )}
+        </div>
+      )}
+
+      {estado === 'erro' && !semCadastro && (
         <div className="aviso" style={{ marginTop: 14 }}>
           {erro}
         </div>
