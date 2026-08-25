@@ -171,8 +171,10 @@ function misturar(a, b, t) {
  *                 as bordas do icone maskable, entao la ela encolhe.
  * @param cantos   raio dos cantos, em fracao do lado. O maskable vai quadrado
  *                 porque quem arredonda e o sistema.
+ * @param simples  sem os tracinhos de medida e com traco mais grosso. Abaixo
+ *                 de ~32 px eles se fundem com o check e a maca vira borrao.
  */
-function desenhar(tamanho, ocupacao, cantos) {
+function desenhar(tamanho, ocupacao, cantos, simples = false) {
   const SS = 4; // 4x4 amostras por pixel: as curvas ficam limpas
   const rgba = new Uint8Array(tamanho * tamanho * 4);
   const escala = (tamanho * ocupacao) / 64;
@@ -180,8 +182,8 @@ function desenhar(tamanho, ocupacao, cantos) {
   const raioCanto = tamanho * cantos;
 
   // no espaco 64x64, para a espessura acompanhar a escala
-  const meiaMaca = 4 / 2;
-  const meioCheck = 4.5 / 2;
+  const meiaMaca = (simples ? 4.6 : 4) / 2;
+  const meioCheck = (simples ? 5 : 4.5) / 2;
   const meiaMedida = 2.6 / 2;
 
   for (let y = 0; y < tamanho; y++) {
@@ -210,7 +212,7 @@ function desenhar(tamanho, ocupacao, cantos) {
           const naMarca =
             distanciaAtePolilinha(mx, my, CONTORNO_MACA) <= meiaMaca ||
             distanciaAtePolilinha(mx, my, CHECK) <= meioCheck ||
-            MEDIDAS.some(([p, q]) => distanciaAteSegmento(mx, my, p, q) <= meiaMedida) ||
+            (!simples && MEDIDAS.some(([p, q]) => distanciaAteSegmento(mx, my, p, q) <= meiaMedida)) ||
             dentro(mx, my, POLI_FOLHA_D) ||
             dentro(mx, my, POLI_FOLHA_E);
 
@@ -237,11 +239,49 @@ function desenhar(tamanho, ocupacao, cantos) {
   return rgba;
 }
 
-for (const [arquivo, tamanho, ocupacao, cantos] of [
+for (const [arquivo, tamanho, ocupacao, cantos, simples] of [
   ['icone-192.png', 192, 0.7, 0.22],
   ['icone-512.png', 512, 0.7, 0.22],
   ['icone-maskable-512.png', 512, 0.52, 0],
+  // a aba do navegador nao le o manifesto: precisa do seu proprio arquivo
+  ['favicon-32.png', 32, 0.78, 0.22, true],
 ]) {
-  writeFileSync(join(saida, arquivo), montarPNG(tamanho, tamanho, desenhar(tamanho, ocupacao, cantos)));
+  writeFileSync(join(saida, arquivo), montarPNG(tamanho, tamanho, desenhar(tamanho, ocupacao, cantos, simples)));
   console.log(`gerado public/${arquivo} (${tamanho}x${tamanho})`);
 }
+
+/* ------------------------------------------------------------- favicon.svg */
+
+/**
+ * O favicon tambem sai daqui, em SVG, para nao virar uma TERCEIRA copia da
+ * geometria (as outras duas sao este arquivo e src/components/Marca.jsx).
+ *
+ * Vai sem os tracinhos de medida e com traco mais grosso: a 16 px eles se
+ * fundem com o check. Cores literais porque arquivo solto nao enxerga as
+ * variaveis CSS do app.
+ */
+function paraPath(segmentos) {
+  const [x0, y0] = segmentos[0];
+  const curvas = segmentos
+    .map(([, , c1x, c1y, c2x, c2y, x, y]) => `C${c1x} ${c1y} ${c2x} ${c2y} ${x} ${y}`)
+    .join('');
+  return `M${x0} ${y0}${curvas}Z`;
+}
+
+const svg = [
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">',
+  '<defs><linearGradient id="f" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">',
+  '<stop stop-color="#4CAF50"/><stop offset="1" stop-color="#9BC34A"/></linearGradient></defs>',
+  '<rect width="64" height="64" rx="14" fill="url(#f)"/>',
+  '<g transform="translate(32 32) scale(0.82) translate(-32 -32)">',
+  `<g fill="none" stroke="#fff" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round">`,
+  `<path d="${paraPath(MACA)}"/>`,
+  `<path d="M${CHECK[0][0]} ${CHECK[0][1]}L${CHECK[1][0]} ${CHECK[1][1]}L${CHECK[2][0]} ${CHECK[2][1]}" stroke-width="5"/>`,
+  '</g>',
+  `<path d="${paraPath(FOLHA_DIREITA)}" fill="#fff"/>`,
+  `<path d="${paraPath(FOLHA_ESQUERDA)}" fill="#fff"/>`,
+  '</g></svg>',
+].join('');
+
+writeFileSync(join(saida, 'favicon.svg'), svg, 'utf-8');
+console.log('gerado public/favicon.svg');
