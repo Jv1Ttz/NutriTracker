@@ -29,6 +29,20 @@
   --gord: #bd3d16; /* 4.88 */
   --perigo: #c62828; /* 5.03 */
 
+  /* tokens que antes eram valor fixo dentro das regras. Viraram variavel
+     para o tema escuro conseguir trocar tudo, e nao metade da tela. */
+  --bg-abas: rgba(235, 245, 233, 0.94);
+  --marcado-bg: #e6f4e7;
+  --perigo-borda: #e8bcbc;
+  --aviso-bg: #fdf6e3;
+  --aviso-borda: #e5d5a5;
+  --aviso-txt: #7a5a00;
+  --info-bg: #e9f2fc;
+  --info-borda: #c2dcf5;
+  --info-txt: #14538f;
+  /* no claro o toque escurece o botao; no escuro ele clareia */
+  --toque: 0.93;
+
   --r: 16px;
   --r-sm: 10px;
   --topo: env(safe-area-inset-top, 0px);
@@ -36,6 +50,54 @@
   --altura-tabs: 62px;
 
   color-scheme: light;
+}
+
+
+/**
+ * Tema escuro.
+ *
+ * So os tokens de cor mudam - nenhuma regra de layout e duplicada. Por isso
+ * valeu extrair os valores fixos para variaveis antes: aqui bastam estas
+ * linhas para o app inteiro virar.
+ *
+ * As cores de macro voltam a ser as claras: sobre #0f1512 elas brilham, e
+ * as escuras do tema claro e que sumiriam aqui. Cada tema precisa das suas.
+ *
+ * O seletor so conhece 'claro' e 'escuro'. Quando o usuario escolhe
+ * "automatico", quem resolve para um dos dois e o lib/tema.js - assim o CSS
+ * nao precisa repetir este bloco inteiro dentro de um prefers-color-scheme.
+ */
+:root[data-tema='escuro'] {
+  --bg: #0f1512;
+  --sup: #171f1b;
+  --sup2: #1e2a24;
+  --borda: #2a3831;
+  --txt: #ebf5e9;
+  --txt2: #93a89c;
+  /* era #647a6e, que dava 3.22 sobre o cartao - abaixo do minimo de 4.5.
+     Vinha assim desde antes do tema claro existir, e pinta titulo de cartao,
+     detalhe de item e aba inativa. Este da 4.90 e mantem o cinza esverdeado. */
+  --txt3: #84998c;
+
+  --kcal: #9bc34a;
+  --prot: #6ec8ff;
+  --carb: #ffc95c;
+  --gord: #ff8f6e;
+  --perigo: #ff6b6b;
+
+  --bg-abas: rgba(15, 21, 18, 0.94);
+  --marcado-bg: #1b2a1a;
+  --perigo-borda: #4a2626;
+  --aviso-bg: #2a2415;
+  --aviso-borda: #4a3f1c;
+  --aviso-txt: #f0d99a;
+  --info-bg: #16232b;
+  --info-borda: #244050;
+  --info-txt: #a9d0e6;
+  /* aqui o toque CLAREIA: escurecer sobre fundo escuro nao se ve */
+  --toque: 1.35;
+
+  color-scheme: dark;
 }
 
 * {
@@ -124,7 +186,7 @@ p {
   z-index: 40;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  background: rgba(235, 245, 233, 0.94);
+  background: var(--bg-abas);
   backdrop-filter: blur(12px);
   border-top: 1px solid var(--borda);
   padding-bottom: var(--base);
@@ -354,9 +416,7 @@ p {
 }
 
 .btn:active {
-  /* no tema escuro o toque CLAREAVA o botao; no claro isso o lava.
-     Escurecer e o equivalente visual. */
-  filter: brightness(0.93);
+  filter: brightness(var(--toque));
 }
 
 .btn.principal {
@@ -368,7 +428,7 @@ p {
 
 .btn.perigo {
   color: var(--perigo);
-  border-color: #e8bcbc;
+  border-color: var(--perigo-borda);
 }
 
 .btn.bloco {
@@ -469,7 +529,7 @@ p {
 
 .opcao.marcada {
   border-color: var(--kcal);
-  background: #e6f4e7;
+  background: var(--marcado-bg);
 }
 
 .opcao-txt {
@@ -698,18 +758,18 @@ p {
 .aviso {
   padding: 12px 14px;
   border-radius: var(--r-sm);
-  background: #fdf6e3;
-  border: 1px solid #e5d5a5;
-  color: #7a5a00;
+  background: var(--aviso-bg);
+  border: 1px solid var(--aviso-borda);
+  color: var(--aviso-txt);
   font-size: 13px;
   line-height: 1.5;
   margin-bottom: 14px;
 }
 
 .aviso.info {
-  background: #e9f2fc;
-  border-color: #c2dcf5;
-  color: #14538f;
+  background: var(--info-bg);
+  border-color: var(--info-borda);
+  color: var(--info-txt);
 }
 
 .centro-txt {
@@ -849,4 +909,68 @@ p {
 .acesso-fim {
   margin-top: auto;
   padding-top: 26px;
+}
+
+/* --------------------------------------------------------------- avatar */
+
+.avatar {
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--sup2);
+  border: 1px solid var(--borda);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--txt3);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.avatar-editor {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* o proprio circulo e clicavel, alem dos botoes ao lado */
+.avatar-botao {
+  position: relative;
+  padding: 0;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.avatar-selo {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--marca2);
+  color: var(--sobre-marca);
+  border: 2px solid var(--sup);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.avatar-nome {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

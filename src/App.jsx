@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { useStore } from './lib/db.js';
 import { sincronizar } from './lib/sync.js';
 import { temSessaoGuardada, voltandoDeLogin, limparUrlDeLogin } from './lib/supabase.js';
+import { observarSistema } from './lib/tema.js';
 import { calcularMetas } from './lib/metas.js';
 import { chaveData } from './lib/util.js';
 import BemVindo from './components/BemVindo.jsx';
@@ -65,6 +66,8 @@ function useSincronizacaoAutomatica() {
 export default function App() {
   const estado = useStore();
   useSincronizacaoAutomatica();
+  // em "automatico", segue o sistema mudando com o app aberto
+  useEffect(() => observarSistema(() => {}), []);
   const [aba, setAba] = useState('hoje');
   const [data, setData] = useState(() => chaveData());
   const [refeicaoAlvo, setRefeicaoAlvo] = useState('almoco');

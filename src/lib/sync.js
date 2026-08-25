@@ -249,6 +249,7 @@ export async function sincronizar() {
           peso: Number(rp.peso),
           atividade: rp.atividade,
           objetivo: rp.objetivo,
+          foto: rp.foto ?? null,
         };
     metasManuais = rp.metas_manuais;
     medidasUsuario = rp.medidas_usuario ?? {};
@@ -333,6 +334,7 @@ export async function sincronizar() {
         peso: perfil.peso,
         atividade: perfil.atividade,
         objetivo: perfil.objetivo,
+        foto: perfil.foto ?? null,
         metas_manuais: metasManuais,
         medidas_usuario: medidasUsuario,
         ultima_qtd: ultimaQtd,

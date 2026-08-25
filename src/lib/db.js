@@ -94,6 +94,12 @@ export function salvarPerfil(perfil) {
   if (primeiroPeso) registrarPeso(chaveData(), perfil.peso);
 }
 
+/** A foto vive dentro do perfil, entao viaja na mesma linha na sincronizacao. */
+export function salvarFoto(dataUrl) {
+  if (!estado.perfil) return;
+  definir({ perfil: { ...estado.perfil, foto: dataUrl }, carimboPerfil: agora() });
+}
+
 export function salvarMetasManuais(metas) {
   definir({ metasManuais: metas, carimboPerfil: agora() });
 }

@@ -9,6 +9,8 @@ import {
 } from '../lib/db.js';
 import { FATORES, OBJETIVOS, calcularMetas } from '../lib/metas.js';
 import Conta from './Conta.jsx';
+import Avatar from './Avatar.jsx';
+import { TEMAS, lerPreferencia, salvarPreferencia } from '../lib/tema.js';
 import { obterSupabase } from '../lib/supabase.js';
 import { chaveData, inteiro } from '../lib/util.js';
 import { IconeLixo } from './Icones.jsx';
@@ -16,6 +18,7 @@ import { IconeLixo } from './Icones.jsx';
 export default function Ajustes({ estado, metas }) {
   const [perfil, setPerfil] = useState(estado.perfil);
   const [salvo, setSalvo] = useState(false);
+  const [tema, setTema] = useState(lerPreferencia);
   const [manuais, setManuais] = useState(
     estado.metasManuais ?? { kcal: metas.kcal, prot: metas.prot, carb: metas.carb, gord: metas.gord }
   );
@@ -81,6 +84,32 @@ export default function Ajustes({ estado, metas }) {
     <>
       <div className="cabecalho">
         <h1>Ajustes</h1>
+      </div>
+
+      <div className="cartao">
+        <Avatar perfil={estado.perfil} editavel />
+      </div>
+
+      <div className="cartao">
+        <div className="cartao-titulo">Aparência</div>
+        <div className="chips">
+          {TEMAS.map((t) => (
+            <button
+              key={t.id}
+              className={`chip ${tema === t.id ? 'marcado' : ''}`}
+              onClick={() => {
+                salvarPreferencia(t.id);
+                setTema(t.id);
+              }}
+            >
+              {t.nome}
+            </button>
+          ))}
+        </div>
+        <p className="sub" style={{ marginTop: 10, lineHeight: 1.5 }}>
+          Vale só para este aparelho — não vai junto na sincronização. Faz sentido o celular
+          ficar escuro à noite e o computador continuar claro.
+        </p>
       </div>
 
       <div className="cartao">

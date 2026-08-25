@@ -7,6 +7,24 @@
       content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no"
     />
     <meta name="theme-color" content="#ebf5e9" />
+    <script>
+      /* Antes da primeira pintura, senao quem escolheu escuro leva um flash
+         branco a cada abertura. Duplica o minimo de lib/tema.js de proposito:
+         precisa rodar sincrono, antes de qualquer modulo carregar. */
+      try {
+        var p = localStorage.getItem('nutritracker.tema') || 'claro';
+        var t =
+          p === 'auto'
+            ? matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'escuro'
+              : 'claro'
+            : p;
+        document.documentElement.dataset.tema = t;
+        document
+          .querySelector('meta[name="theme-color"]')
+          .setAttribute('content', t === 'escuro' ? '#0f1512' : '#ebf5e9');
+      } catch (e) {}
+    </script>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Nutri" />
