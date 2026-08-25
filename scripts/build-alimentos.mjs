@@ -93,6 +93,22 @@ const usda = JSON.parse(readFileSync(join(aqui, 'usda-selecao.json'), 'utf-8')).
 
 alimentos = [...alimentos, ...usda];
 
+/* -------------------------------------------- produtos da Open Food Facts */
+
+// Selecao de produtos brasileiros com codigo de barras (ver build-off.mjs).
+// A categoria entra aqui em vez de no JSON de origem: e a mesma string para
+// todos, e repetida assim ela some na compressao.
+//
+// LICENCA: ODbL. Embutir e distribuir base derivada, entao o app credita a
+// Open Food Facts e declara a licenca em Ajustes e no LEIA-ME.
+const off = JSON.parse(readFileSync(join(aqui, 'off-selecao.json'), 'utf-8')).map((a) => ({
+  ...a,
+  categoria: 'Código de barras',
+  busca: normalizar(`${a.nome} ${a.marca ?? ''}`),
+}));
+
+alimentos = [...alimentos, ...off];
+
 const categorias = [...new Set(alimentos.map((a) => a.categoria))].sort();
 
 writeFileSync(
@@ -103,7 +119,8 @@ writeFileSync(
 
 console.log(
   `OK: ${alimentos.length} alimentos em ${categorias.length} categorias ` +
-    `(${alimentos.length - usda.length} da TACO, ${usda.length} da USDA)`
+    `(${alimentos.length - usda.length - off.length} da TACO, ${usda.length} da USDA, ` +
+    `${off.length} da Open Food Facts)`
 );
 if (removidos.length) {
   console.log(`\nRemovidos por falta de dados na TACO (${removidos.length}):`);

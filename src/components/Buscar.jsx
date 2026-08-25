@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import AdicionarSheet from './AdicionarSheet.jsx';
 import Scanner from './Scanner.jsx';
 import CriarAlimento from './CriarAlimento.jsx';
-import { buscar, frequentes } from '../lib/busca.js';
+import { buscar, frequentes, carregarBase, baseCarregada } from '../lib/busca.js';
 import { buscarPorTexto } from '../lib/openfoodfacts.js';
 import { inteiro } from '../lib/util.js';
 import { REFEICOES } from '../lib/calculo.js';
@@ -36,14 +36,23 @@ export default function Buscar({ estado, data, refeicaoInicial, onDepoisDeAdicio
   const [produtos, setProdutos] = useState([]);
   const [buscandoOff, setBuscandoOff] = useState(false);
   const campoRef = useRef(null);
+  // a base de alimentos chega junto com esta aba, nao na abertura do app
+  const [pronta, setPronta] = useState(baseCarregada);
+  useEffect(() => {
+    let vivo = true;
+    carregarBase().then(() => vivo && setPronta(true));
+    return () => {
+      vivo = false;
+    };
+  }, []);
 
   const locais = useMemo(
-    () => buscar(consulta, estado.customs),
-    [consulta, estado.customs]
+    () => (pronta ? buscar(consulta, estado.customs) : []),
+    [pronta, consulta, estado.customs]
   );
   const usados = useMemo(
-    () => frequentes(estado.diario, estado.customs),
-    [estado.diario, estado.customs]
+    () => (pronta ? frequentes(estado.diario, estado.customs) : []),
+    [pronta, estado.diario, estado.customs]
   );
 
   // Busca de produtos industrializados: so entra quando a base local nao
@@ -109,16 +118,18 @@ export default function Buscar({ estado, data, refeicaoInicial, onDepoisDeAdicio
         </>
       )}
 
-      {!consulta && usados.length === 0 && (
+      {!pronta && <div className="centro-txt">Carregando os alimentos...</div>}
+
+      {pronta && !consulta && usados.length === 0 && (
         <div className="centro-txt">
           Busque pelo nome do alimento.
           <br />
-          São 633 itens embutidos — a tabela TACO e uma seleção da USDA — e o leitor de código de
-          barras acha os industrializados.
+          São mais de 4 mil itens embutidos: a tabela TACO, uma seleção da USDA e os produtos de
+          mercado mais escaneados no Brasil. O leitor de código de barras funciona offline.
         </div>
       )}
 
-      {consulta && (
+      {pronta && consulta && (
         <>
           {locais.length > 0 && <div className="cartao-titulo">Tabela TACO</div>}
           {locais.map((a) => (

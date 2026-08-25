@@ -66,7 +66,7 @@ internet** (só a busca por código de barras precisa de rede).
 |---|---|
 | **Abertura** | Aparece uma vez, antes do cadastro: o que o app faz e onde seus dados ficam. |
 | **Hoje** | Anel de calorias, barras de macro, as 4 refeições. Navega entre os dias nas setas. Toque em qualquer item para editar ou apagar. |
-| **Adicionar** | Busca nos 633 alimentos embutidos (TACO + seleção da USDA), leitor de código de barras, "o que você mais come" e cadastro manual. |
+| **Adicionar** | Busca nos 4.092 alimentos embutidos (TACO + USDA + produtos de mercado), leitor de código de barras, "o que você mais come" e cadastro manual. |
 | **Peso** | Registro diário, gráfico com média móvel de 7 dias e sugestão automática de ajuste nas calorias. |
 | **Ajustes** | Editar perfil, fixar metas na mão, ver seus alimentos cadastrados, backup e restauração. |
 
@@ -163,7 +163,9 @@ igual, só offline** — a seção de conta nem aparece nos Ajustes.
 
 ```
 scripts/
-  build-taco.mjs      converte a TACO bruta para o formato do app
+  build-alimentos.mjs junta as fontes e gera src/data/alimentos.json
+  build-usda.mjs      extrai a seleção da USDA (precisa do CSV baixado)
+  build-off.mjs       cura a colheita da Open Food Facts
   correcoes.json      completa os alimentos que a TACO deixou em branco
   build-icons.mjs     gera os ícones PNG do PWA (sem dependência de imagem)
   dev-https.mjs       servidor de desenvolvimento com https (para a câmera)

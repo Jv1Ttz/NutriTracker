@@ -1,14 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Folha from './Folha.jsx';
 import EditorPorcao from './EditorPorcao.jsx';
 import { atualizarItem, removerItem, useStore } from '../lib/db.js';
-import { porId } from '../lib/busca.js';
+import { porId, carregarBase, baseCarregada } from '../lib/busca.js';
 import { IconeLixo } from './Icones.jsx';
 
 export default function ItemSheet({ item, data, onFechar }) {
   const estado = useStore();
   const [qtd, setQtd] = useState(String(item.qtd));
   const [refeicao, setRefeicao] = useState(item.refeicao);
+  // a folha abre a partir do diario, onde a base pode nao ter sido pedida
+  // ainda. Sem ela o item aparece igual, so sem as medidas caseiras.
+  const [, redesenhar] = useState(0);
+  useEffect(() => {
+    if (!baseCarregada()) carregarBase().then(() => redesenhar((n) => n + 1));
+  }, []);
   const alimento = porId(item.alimentoId, estado.customs);
 
   function salvar() {

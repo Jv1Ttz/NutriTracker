@@ -1,8 +1,37 @@
-import ALIMENTOS from '../data/alimentos.json';
 import { normalizar } from './util.js';
 import { alternativas } from './sinonimos.js';
 
-export { ALIMENTOS };
+/**
+ * A base entra por import dinamico, nao estatico.
+ *
+ * Sao 4 mil alimentos, 1,2 MB de JSON. No import estatico isso ia junto no
+ * bundle inicial e era analisado na abertura, mesmo para quem so queria ver
+ * o diario do dia - o chunk principal passou de 384 kB para 1,5 MB quando os
+ * produtos da Open Food Facts entraram.
+ *
+ * Quem precisa da base sao a aba Adicionar, a folha de editar item e o
+ * leitor de codigo de barras. Nenhuma dessas telas aparece na abertura,
+ * entao a base chega junto com elas.
+ */
+export let ALIMENTOS = [];
+
+let POR_ID = new Map();
+let POR_CODIGO = new Map();
+let promessa = null;
+
+export function baseCarregada() {
+  return ALIMENTOS.length > 0;
+}
+
+export function carregarBase() {
+  promessa ??= import('../data/alimentos.json').then((m) => {
+    ALIMENTOS = m.default;
+    POR_ID = new Map(ALIMENTOS.map((a) => [a.id, a]));
+    POR_CODIGO = new Map(ALIMENTOS.filter((a) => a.codigo).map((a) => [a.codigo, a]));
+    return ALIMENTOS;
+  });
+  return promessa;
+}
 
 /**
  * Palavras de ligacao, descartadas dos termos obrigatorios.
@@ -34,14 +63,9 @@ function casa(alvo, termo) {
   return alternativas(termo).some((alt) => raizes(alt).some((r) => alvo.includes(r)));
 }
 
-const POR_ID = new Map(ALIMENTOS.map((a) => [a.id, a]));
-
 export function porId(id, customs = []) {
   return POR_ID.get(id) ?? customs.find((c) => c.id === id) ?? null;
 }
-
-/** produtos embutidos que tem codigo de barras, indexados pelo codigo */
-const POR_CODIGO = new Map(ALIMENTOS.filter((a) => a.codigo).map((a) => [a.codigo, a]));
 
 /**
  * Acha um produto pelo codigo de barras SEM internet.
@@ -127,7 +151,9 @@ export function frequentes(diario, customs = [], limite = 30) {
     .filter((a) => !a.indisponivel);
 }
 
-export const CATEGORIAS = [...new Set(ALIMENTOS.map((a) => a.categoria))].sort();
+export function categorias() {
+  return [...new Set(ALIMENTOS.map((a) => a.categoria))].sort();
+}
 
 export function porCategoria(categoria) {
   return ALIMENTOS.filter((a) => a.categoria === categoria);

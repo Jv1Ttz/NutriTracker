@@ -50,14 +50,15 @@ function limparNome(nome, marca) {
     n = n.toLowerCase().replace(/(^|[.!?]\s+)([a-zà-ÿ])/g, (_, a, b) => a + b.toUpperCase());
   }
 
-  if (marca) {
-    const m = semAcento(marca);
-    // tira a marca das pontas, nao do meio: no meio costuma fazer parte do nome
-    const partes = n.split(' ');
-    while (partes.length > 1 && semAcento(partes[0]) === m) partes.shift();
-    while (partes.length > 1 && semAcento(partes.at(-1)) === m) partes.pop();
-    n = partes.join(' ');
-  }
+  // NAO tira a marca do nome.
+  //
+  // A versao anterior tirava, e o resultado era pior que a repeticao:
+  // "Toddy Original 750g" virava "Original 750g" e "pullman tradicional pao"
+  // virava "tradicional pao". E esse texto que vai para o diario - "Original
+  // 750g" registrado no almoco nao diz o que a pessoa comeu.
+  //
+  // A marca aparecendo duas vezes na lista e feio; nome que nao identifica o
+  // alimento e defeito.
 
   return n.replace(/^[\s\-–,.]+|[\s\-–,.]+$/g, '').trim();
 }
@@ -65,12 +66,38 @@ function limparNome(nome, marca) {
 /* ------------------------------------------------------------------ cura */
 
 const bruto = JSON.parse(readFileSync(entrada, 'utf-8'));
-console.log(`entrada: ${bruto.length} produtos do Brasil com tabela completa`);
+console.log(`entrada: ${bruto.length} produtos com tabela completa marcados como vendidos no Brasil`);
+
+/**
+ * Tres peneiras, nesta ordem, e cada uma existe por um motivo achado no dado:
+ *
+ * 1. CODIGO 789/790 - o prefixo GS1 do Brasil. Sem isso entram produtos
+ *    europeus que alguem marcou como "vendido no Brasil": dos 25 mil, 5 mil
+ *    sao importados.
+ *
+ * 2. MARCA E PORCAO preenchidas - proxy de registro bem feito. Quem se deu
+ *    ao trabalho de preencher isso costuma ter conferido o resto.
+ *
+ * 3. ESCANEADO AO MENOS UMA VEZ - alguem de verdade apontou a camera para
+ *    esse produto. E o melhor sinal de "existe e alguem come" que a base
+ *    oferece.
+ *
+ * Sobre o passo 3: ordenar pelo numero de escaneamentos SEM a peneira 1 nao
+ * funciona. A comunidade da Open Food Facts e majoritariamente francesa,
+ * entao os mais escaneados no mundo sao Lindt, Barilla e Ricola. Dentro do
+ * Brasil a ordem volta a fazer sentido: Nescau, Nutella, tapioca, Ninho.
+ */
+const candidatos = bruto
+  .filter((p) => /^(789|790)/.test(p.code))
+  .filter((p) => p.marca && p.porcaoQtd > 0)
+  .filter((p) => p.scans > 0);
+
+console.log(`candidatos apos as peneiras: ${candidatos.length}`);
 
 const vistos = new Set();
 const selecao = [];
 
-for (const p of bruto) {
+for (const p of candidatos) {
   if (selecao.length >= QUANTOS) break;
 
   const nome = limparNome(p.nome, p.marca);
@@ -91,16 +118,16 @@ for (const p of bruto) {
     codigo: p.code, // e o que deixa o leitor achar o produto sem internet
     nome,
     marca: p.marca || null,
-    categoria: 'Código de barras',
-    kcal: p.kcal,
-    prot: p.prot,
-    carb: p.carb,
-    gord: p.gord,
-    fibra: p.fibra,
-    sodio: p.sodio,
+    // a OFF guarda energia com precisao absurda (544.933078393881);
+    // uma casa decimal ja e mais do que o rotulo promete
+    kcal: Math.round(p.kcal * 10) / 10,
+    prot: Math.round(p.prot * 10) / 10,
+    carb: Math.round(p.carb * 10) / 10,
+    gord: Math.round(p.gord * 10) / 10,
+    fibra: p.fibra === null ? null : Math.round(p.fibra * 10) / 10,
+    sodio: p.sodio === null ? null : Math.round(p.sodio * 10) / 10,
     ...(medidas.length ? { medidas } : {}),
     fonte: 'off',
-    completo: true,
   });
 }
 
@@ -108,7 +135,7 @@ writeFileSync(join(aqui, 'off-selecao.json'), JSON.stringify(selecao), 'utf-8');
 
 const kb = (JSON.stringify(selecao).length / 1024).toFixed(0);
 console.log(`OK: ${selecao.length} produtos gravados em scripts/off-selecao.json (${kb} KB)`);
-console.log(`descartados por duplicata ou nome ruim: ${bruto.length - selecao.length > 0 ? 'ver corte' : 0}`);
+console.log(`descartados por duplicata ou nome ruim: ${candidatos.length - selecao.length}`);
 console.log('\nos 12 mais escaneados que entraram:');
 for (const p of selecao.slice(0, 12)) {
   console.log(`  ${String(p.kcal).padStart(4)} kcal  ${p.nome.slice(0, 44).padEnd(46)}${p.marca ?? ''}`);
