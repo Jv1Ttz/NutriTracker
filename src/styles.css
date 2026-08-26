@@ -206,6 +206,12 @@ p {
   backdrop-filter: blur(12px);
   border-top: 1px solid var(--borda);
   padding-bottom: var(--base);
+  /* Em tela larga a barra acompanha a coluna de conteudo em vez de esticar de
+     ponta a ponta: o app tem 560 px no meio, e os quatro icones espalhados
+     por 768 ficavam soltos, sem relacao com o que esta acima deles.
+     O fundo continua ate as bordas, so os botoes e que se alinham. */
+  padding-left: max(0px, calc((100% - 560px) / 2));
+  padding-right: max(0px, calc((100% - 560px) / 2));
 }
 
 .tabs button {
@@ -534,9 +540,37 @@ p {
   border-color: var(--kcal);
 }
 
+/**
+ * Linha de campos ou botoes lado a lado.
+ *
+ * Quebra em vez de espremer. Em 320 px os quatro campos de meta ficavam com
+ * 56 px cada - "2090" nao cabia dentro do proprio campo - e botoes como
+ * "Voltar ao automatico" quebravam o texto em duas linhas dentro do botao.
+ *
+ * Com flex-basis a quebra acontece sozinha na largura em que faria falta, em
+ * vez de num breakpoint escolhido a dedo que erra no aparelho seguinte.
+ */
 .linha {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
+}
+
+.linha > .campo {
+  flex: 1 1 110px;
+}
+
+.linha > .btn {
+  /* Dois botoes lado a lado so cabem quando o cartao tem ~390 px por dentro,
+     o que no celular nunca acontece: a conta e a largura da tela menos 32 do
+     conteudo e menos 32 do cartao. Entao no celular eles ocupam a linha
+     inteira - mais faceis de acertar com o dedo - e voltam a dividir espaco
+     no desktop, onde o app vai ate 560 px.
+
+     O numero sai do rotulo mais longo, "Voltar ao automatico": 143 px de
+     texto mais 36 de padding. Com 175 faltavam 2 px e ele quebrava em duas
+     linhas dentro do botao. */
+  flex: 1 1 190px;
 }
 
 .linha > * {
@@ -1016,4 +1050,36 @@ p {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+
+/* ------------------------------------------------------- telas estreitas */
+
+/**
+ * Abaixo de 360 px (iPhone SE, Androids de entrada) o anel de 124 px deixava
+ * so 112 px para os macros, e "Carboidrato 100 / 210 g" quebrava em duas
+ * linhas - o bloco inteiro ficava torto. Encolher o anel devolve o espaco.
+ */
+@media (max-width: 360px) {
+  .resumo {
+    gap: 12px;
+  }
+
+  .anel {
+    width: 104px;
+    height: 104px;
+  }
+
+  .anel-num {
+    font-size: 23px;
+  }
+
+  .conteudo {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .cartao {
+    padding: 14px;
+  }
 }
