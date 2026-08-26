@@ -67,6 +67,29 @@ function converter(p) {
   };
 }
 
+/**
+ * So a foto de um produto, por codigo de barras.
+ *
+ * Existe separado de buscarPorCodigo porque os produtos embutidos ja tem os
+ * valores: falta apenas a imagem, e pedir a ficha inteira gastaria banda a
+ * toa.
+ *
+ * Silencioso de proposito. Foto e enfeite: se a rede falhar, se a Open Food
+ * Facts estiver fora do ar, ou se o produto nao tiver imagem, a tela segue
+ * exatamente como seguiria sem ela - sem erro, sem aviso, sem espaco vazio.
+ */
+export async function buscarFoto(codigo, sinal) {
+  try {
+    const url = `${BASE}/api/v2/product/${encodeURIComponent(codigo)}.json?fields=image_front_small_url`;
+    const r = await fetch(url, { signal: sinal });
+    if (!r.ok) return null;
+    const dados = await r.json();
+    return dados.product?.image_front_small_url ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function buscarPorCodigo(codigo, sinal) {
   const url = `${BASE}/api/v2/product/${encodeURIComponent(codigo)}.json?fields=${CAMPOS}`;
   const r = await fetch(url, { signal: sinal });

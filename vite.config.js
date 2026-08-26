@@ -55,6 +55,18 @@ export default defineConfig({
               cacheableResponse: { statuses: [0, 200] },
             },
           },
+          {
+            // Fotos de produto. CacheFirst porque foto de embalagem nao muda:
+            // uma vez baixada, as proximas aberturas do mesmo produto saem do
+            // aparelho, inclusive sem internet.
+            urlPattern: /^https:\/\/images\.openfoodfacts\.org\//,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'fotos-de-produto',
+              expiration: { maxEntries: 300, maxAgeSeconds: 60 * 60 * 24 * 180 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
         ],
       },
       devOptions: { enabled: false },

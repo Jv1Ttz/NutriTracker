@@ -1139,3 +1139,23 @@ p {
     padding: 14px;
   }
 }
+
+/* ------------------------------------------------------- foto do produto */
+
+/**
+ * Aparece na ficha do alimento, nunca na lista de resultados.
+ *
+ * O tamanho e fixo para a folha nao pular quando a foto chega da rede: o
+ * espaco so existe se houver foto, e uma vez que existe nao muda mais.
+ */
+.foto-produto {
+  display: block;
+  width: 92px;
+  height: 92px;
+  object-fit: contain;
+  border-radius: var(--r-sm);
+  background: var(--sup2);
+  border: 1px solid var(--borda);
+  margin: 4px auto 14px;
+  animation: aparecer var(--medio) var(--curva);
+}
