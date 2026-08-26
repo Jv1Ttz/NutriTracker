@@ -43,11 +43,19 @@ export function somar(itens) {
   }, ZERO);
 }
 
+/**
+ * As refeicoes nao carregam mais emoji.
+ *
+ * Emoji e desenhado pelo SISTEMA: o mesmo ☕ vira uma coisa no Android, outra
+ * no iPhone e outra no Windows, sempre colorido e sempre destoando de um
+ * conjunto de traco fino. O icone virou responsabilidade da interface, em
+ * ICONE_REFEICAO no Icones.jsx.
+ */
 export const REFEICOES = [
-  { id: 'cafe', nome: 'Café da manhã', emoji: '☕' },
-  { id: 'almoco', nome: 'Almoço', emoji: '🍽️' },
-  { id: 'janta', nome: 'Jantar', emoji: '🌙' },
-  { id: 'lanches', nome: 'Lanches', emoji: '🍎' },
+  { id: 'cafe', nome: 'Café da manhã' },
+  { id: 'almoco', nome: 'Almoço' },
+  { id: 'janta', nome: 'Jantar' },
+  { id: 'lanches', nome: 'Lanches' },
 ];
 
 /**

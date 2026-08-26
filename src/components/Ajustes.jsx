@@ -324,6 +324,13 @@ export default function Ajustes({ estado, metas }) {
           A <b>TACO</b> é da UNICAMP e a <b>USDA FoodData Central</b> é de domínio público. Os
           nomes em português dos itens da USDA são deste app; os valores, não.
         </p>
+        <p className="sub" style={{ lineHeight: 1.55, marginTop: 10 }}>
+          Os ícones vêm do{' '}
+          <a href="https://lucide.dev" target="_blank" rel="noopener">
+            Lucide
+          </a>
+          , sob licença ISC.
+        </p>
       </div>
 
       <button className="btn perigo bloco" onClick={zerar}>

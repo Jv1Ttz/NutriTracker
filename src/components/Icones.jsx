@@ -1,3 +1,14 @@
+/**
+ * Icones do app.
+ *
+ * A geometria vem do Lucide (https://lucide.dev), licenca ISC, copiada para
+ * ca em vez de instalada. Sao dezesseis icones: uma dependencia nova, com o
+ * build e o bundle que vem junto, nao se paga por isso - e o app e
+ * offline-first, onde cada kB do boot importa.
+ *
+ * O traco fica em 1.8 e nao nos 2 do Lucide: e o peso que o resto do app ja
+ * usava, e a troca aqui e de DESENHO, nao de peso visual.
+ */
 const base = {
   fill: 'none',
   stroke: 'currentColor',
@@ -9,69 +20,148 @@ const base = {
 
 export const IconeHoje = (p) => (
   <svg {...base} {...p}>
-    <rect x="3" y="4.5" width="18" height="16" rx="3" />
-    <path d="M3 9.5h18M8 2.5v4M16 2.5v4" />
-    <path d="M8.5 14.5h7" />
+    <path d="M8 2v3" />
+    <path d="M16 2v3" />
+    <rect x="3" y="3" width="18" height="18" rx="2" />
+    <path d="M3 9h18" />
+    <path d="M8 13h.01" />
+    <path d="M12 13h.01" />
+    <path d="M16 13h.01" />
+    <path d="M8 17h.01" />
+    <path d="M12 17h.01" />
+    <path d="M16 17h.01" />
   </svg>
 );
 
 export const IconeBuscar = (p) => (
   <svg {...base} {...p}>
-    <circle cx="11" cy="11" r="7" />
-    <path d="m20 20-3.6-3.6" />
+    <path d="m21 21-4.34-4.34" />
+    <circle cx="11" cy="11" r="8" />
   </svg>
 );
 
 export const IconePeso = (p) => (
   <svg {...base} {...p}>
-    <path d="M3 20V9m6 11V4m6 16v-7m6 7V7" />
+    <path d="M12 3v18" />
+    <path d="m19 8 3 8a5 5 0 0 1-6 0zV7" />
+    <path d="M3 7h1a17 17 0 0 0 8-2 17 17 0 0 0 8 2h1" />
+    <path d="m5 8 3 8a5 5 0 0 1-6 0zV7" />
+    <path d="M7 21h10" />
   </svg>
 );
 
 export const IconeAjustes = (p) => (
   <svg {...base} {...p}>
-    <circle cx="12" cy="12" r="3.2" />
-    <path d="M12 2.5v2.6M12 18.9v2.6M21.5 12h-2.6M5.1 12H2.5M18.7 5.3l-1.8 1.8M7.1 16.9l-1.8 1.8M18.7 18.7l-1.8-1.8M7.1 7.1 5.3 5.3" />
+    <path d="M14 17H5" />
+    <path d="M19 7h-9" />
+    <circle cx="17" cy="17" r="3" />
+    <circle cx="7" cy="7" r="3" />
   </svg>
 );
 
 export const IconeCodigoBarras = (p) => (
   <svg {...base} {...p}>
-    <path d="M3 7V5.5A2.5 2.5 0 0 1 5.5 3H7M17 3h1.5A2.5 2.5 0 0 1 21 5.5V7M21 17v1.5a2.5 2.5 0 0 1-2.5 2.5H17M7 21H5.5A2.5 2.5 0 0 1 3 18.5V17" />
-    <path d="M7 8v8M10.5 8v8M14 8v8M17 8v8" />
+    <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+    <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+    <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+    <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+    <path d="M8 7v10" />
+    <path d="M12 7v10" />
+    <path d="M17 7v10" />
   </svg>
 );
 
 export const IconeEsquerda = (p) => (
   <svg {...base} {...p}>
-    <path d="m14.5 5-7 7 7 7" />
+    <path d="m15 18-6-6 6-6" />
   </svg>
 );
 
 export const IconeDireita = (p) => (
   <svg {...base} {...p}>
-    <path d="m9.5 5 7 7-7 7" />
+    <path d="m9 18 6-6-6-6" />
   </svg>
 );
 
 export const IconeLixo = (p) => (
   <svg {...base} {...p}>
-    <path d="M4 6.5h16M9.5 6.5V4.5h5v2M6.5 6.5l1 13h9l1-13" />
+    <path d="M10 11v6" />
+    <path d="M14 11v6" />
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+    <path d="M3 6h18" />
+    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
   </svg>
 );
 
-export const IconeCopiar = (p) => (
+export const IconeRepetir = (p) => (
   <svg {...base} {...p}>
-    <rect x="8.5" y="8.5" width="12" height="12" rx="2.5" />
-    <path d="M15.5 5.5A2.5 2.5 0 0 0 13 3H6A3 3 0 0 0 3 6v7a2.5 2.5 0 0 0 2.5 2.5" />
+    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+    <path d="M3 3v5h5" />
   </svg>
 );
 
 export const IconeFechar = (p) => (
   <svg {...base} {...p}>
-    <path d="m6 6 12 12M18 6 6 18" />
+    <path d="M18 6 6 18" />
+    <path d="m6 6 12 12" />
   </svg>
 );
+
+export const IconeMais = (p) => (
+  <svg {...base} {...p}>
+    <path d="M5 12h14" />
+    <path d="M12 5v14" />
+  </svg>
+);
+
+export const IconeLapis = (p) => (
+  <svg {...base} {...p}>
+    <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+    <path d="m15 5 4 4" />
+  </svg>
+);
+
+export const IconeCafe = (p) => (
+  <svg {...base} {...p}>
+    <path d="M10 2v2" />
+    <path d="M14 2v2" />
+    <path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1" />
+    <path d="M6 2v2" />
+  </svg>
+);
+
+export const IconeAlmoco = (p) => (
+  <svg {...base} {...p}>
+    <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
+    <path d="M7 2v20" />
+    <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" />
+  </svg>
+);
+
+export const IconeJanta = (p) => (
+  <svg {...base} {...p}>
+    <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+  </svg>
+);
+
+export const IconeLanche = (p) => (
+  <svg {...base} {...p}>
+    <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5" />
+    <path d="M8.5 8.5v.01" />
+    <path d="M16 15.5v.01" />
+    <path d="M12 12v.01" />
+    <path d="M11 17v.01" />
+    <path d="M7 14v.01" />
+  </svg>
+);
+
+/** icone de cada refeicao, para o Hoje e o editor de porcao */
+export const ICONE_REFEICAO = {
+  cafe: IconeCafe,
+  almoco: IconeAlmoco,
+  janta: IconeJanta,
+  lanches: IconeLanche,
+};
 
 // O "G" do Google, nas cores oficiais - por isso nao usa `base`, que pinta
 // tudo com currentColor.

@@ -4,7 +4,7 @@ import ItemSheet from './ItemSheet.jsx';
 import { REFEICOES, somar, valoresItem } from '../lib/calculo.js';
 import { copiarDia } from '../lib/db.js';
 import { chaveData, somarDias, rotuloData, inteiro, decimal } from '../lib/util.js';
-import { IconeEsquerda, IconeDireita, IconeCopiar } from './Icones.jsx';
+import { IconeEsquerda, IconeDireita, IconeRepetir, IconeMais, ICONE_REFEICAO } from './Icones.jsx';
 
 function Macro({ nome, consumido, meta, cor }) {
   const pct = meta > 0 ? Math.min((consumido / meta) * 100, 100) : 0;
@@ -94,7 +94,7 @@ export default function Hoje({ estado, metas, data, setData, onAdicionar }) {
           <section className="refeicao" key={r.id}>
             <div className="refeicao-topo">
               <div className="refeicao-nome">
-                <span aria-hidden="true">{r.emoji}</span>
+                {ICONE_REFEICAO[r.id]?.({ width: 17, height: 17, 'aria-hidden': 'true' })}
                 {r.nome}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -104,7 +104,7 @@ export default function Hoje({ estado, metas, data, setData, onAdicionar }) {
                   onClick={() => onAdicionar(r.id)}
                   aria-label={`Adicionar em ${r.nome}`}
                 >
-                  +
+                  <IconeMais width={17} height={17} />
                 </button>
               </div>
             </div>
@@ -138,7 +138,7 @@ export default function Hoje({ estado, metas, data, setData, onAdicionar }) {
           style={{ marginTop: 6 }}
           onClick={() => copiarDia(ontem, data)}
         >
-          <IconeCopiar style={{ width: 17, height: 17 }} />
+          <IconeRepetir style={{ width: 17, height: 17 }} />
           Repetir tudo que comi ontem
         </button>
       )}

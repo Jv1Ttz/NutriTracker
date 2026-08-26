@@ -55,7 +55,7 @@ export default function EditorPorcao({
                 className={`chip ${refeicao === r.id ? 'marcado' : ''}`}
                 onClick={() => setRefeicao(r.id)}
               >
-                {r.emoji} {r.nome}
+                {r.nome}
               </button>
             ))}
           </div>

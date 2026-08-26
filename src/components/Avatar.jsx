@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { salvarFoto } from '../lib/db.js';
 import { prepararFoto, tamanhoEmKb } from '../lib/foto.js';
+import { IconeLapis } from './Icones.jsx';
 
 /** Iniciais como reserva: melhor que um boneco cinza generico. */
 function iniciais(nome) {
@@ -57,7 +58,7 @@ export default function Avatar({ perfil, editavel = false, tamanho = 64 }) {
       >
         {circulo}
         <span className="avatar-selo" aria-hidden="true">
-          {ocupado ? '…' : '✎'}
+          {ocupado ? '…' : <IconeLapis width={13} height={13} />}
         </span>
       </button>
 

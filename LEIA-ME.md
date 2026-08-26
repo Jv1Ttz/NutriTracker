@@ -183,6 +183,7 @@ src/
     openfoodfacts.js  consulta por código de barras
     util.js           datas, normalização de texto, formatação
   components/         telas e componentes de interface
+    Icones.jsx        ícones do Lucide (ISC), copiados em vez de instalados
     Marca.jsx         a maca em SVG, de 20 a 512 px
     BemVindo.jsx      tela de abertura
 ```
