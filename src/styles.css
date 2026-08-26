@@ -43,6 +43,14 @@
   /* no claro o toque escurece o botao; no escuro ele clareia */
   --toque: 0.93;
 
+  /* Uma curva so para o app inteiro. A maioria das transicoes usava "ease",
+     que e generico; esta desacelera no fim e e a mesma que a folha ja usava
+     ao subir - por isso tudo passa a parecer da mesma familia. */
+  --curva: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --rapido: 0.15s;
+  --medio: 0.28s;
+  --lento: 0.4s;
+
   --r: 16px;
   --r-sm: 10px;
   --topo: env(safe-area-inset-top, 0px);
@@ -103,6 +111,26 @@
 * {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
+}
+
+/**
+ * Quem pediu menos movimento no sistema recebe menos movimento.
+ *
+ * Nao e detalhe distante: animacao na tela provoca enjoo e tontura em quem
+ * tem transtorno vestibular, e o proprio sistema ja perguntou isso a pessoa.
+ * Nao zeramos para 0s porque animacao de duracao zero cancela o evento
+ * transitionend em alguns navegadores; 0.01ms termina na hora e continua
+ * disparando o evento.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Sem isto o navegador espera ~300 ms depois do toque para ver se vem um
@@ -169,6 +197,11 @@ p {
 }
 
 .conteudo {
+  /* a chave por aba no App remonta este bloco a cada troca, e a animacao
+     dispara sozinha: a tela nova sobe alguns pixels em vez de aparecer de
+     uma vez. Poucos pixels de proposito - deslocamento grande cansa quem usa
+     o app varias vezes por dia */
+  animation: entrar var(--medio) var(--curva);
   flex: 1;
   padding: calc(var(--topo) + 12px) 16px calc(var(--altura-tabs) + var(--base) + 24px);
 }
@@ -224,7 +257,7 @@ p {
   color: var(--txt3);
   font-size: 11px;
   font-weight: 500;
-  transition: color 0.15s;
+  transition: color var(--rapido) var(--curva);
 }
 
 .tabs button.ativa {
@@ -343,7 +376,7 @@ p {
   display: block;
   height: 100%;
   border-radius: 99px;
-  transition: width 0.3s ease;
+  transition: width var(--lento) var(--curva);
 }
 
 /* -------------------------------------------------------------- refeicao */
@@ -434,7 +467,18 @@ p {
   font-size: 15px;
   font-weight: 550;
   border: 1px solid var(--borda);
-  transition: filter 0.15s;
+  transition:
+    filter var(--rapido) var(--curva),
+    transform var(--rapido) var(--curva);
+}
+
+/* Alem do brilho, o botao cede um pouco sob o dedo. E o retorno que faz o
+   toque parecer registrado antes mesmo de a tela mudar. */
+.btn:active,
+.chip:active,
+.btn-add:active,
+.icone-btn:active {
+  transform: scale(0.97);
 }
 
 .btn:active {
@@ -478,6 +522,7 @@ p {
 .btn-add,
 .icone-btn {
   position: relative;
+  transition: transform var(--rapido) var(--curva);
 }
 
 .btn-add {
@@ -628,6 +673,10 @@ p {
   border-radius: 99px;
   background: var(--sup2);
   border: 1px solid var(--borda);
+  transition:
+    background var(--rapido) var(--curva),
+    border-color var(--rapido) var(--curva),
+    transform var(--rapido) var(--curva);
   font-size: 13px;
   white-space: nowrap;
 }
@@ -731,7 +780,7 @@ p {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  animation: aparecer 0.15s ease;
+  animation: aparecer var(--rapido) var(--curva);
 }
 
 .folha {
@@ -748,7 +797,7 @@ p {
   border-radius: 20px 20px 0 0;
   border-top: 1px solid var(--borda);
   padding: 8px 16px calc(20px + var(--base));
-  animation: subir 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: subir var(--medio) var(--curva);
 }
 
 .folha-alca {
@@ -764,6 +813,13 @@ p {
   font-weight: 620;
   letter-spacing: -0.02em;
   margin-bottom: 4px;
+}
+
+@keyframes entrar {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
 }
 
 @keyframes subir {

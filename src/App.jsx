@@ -121,7 +121,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <main className="conteudo">
+      <main className="conteudo" key={aba}>
         {aba === 'hoje' && (
           <Hoje
             estado={estado}

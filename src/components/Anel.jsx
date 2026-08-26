@@ -1,4 +1,5 @@
 import { inteiro } from '../lib/util.js';
+import { useNumeroAnimado } from '../lib/animacao.js';
 
 /**
  * Anel de progresso das calorias. Quando passa de 100% o excedente e
@@ -10,7 +11,9 @@ export default function Anel({ consumido, meta }) {
   const prop = meta > 0 ? consumido / meta : 0;
   const dentro = Math.min(prop, 1);
   const excedente = Math.max(0, Math.min(prop - 1, 1));
-  const restante = meta - consumido;
+  // o numero caminha junto com o anel, na mesma duracao: os dois mostram a
+  // mesma coisa e antes se moviam em ritmos diferentes
+  const restante = useNumeroAnimado(meta - consumido);
 
   return (
     <div className="anel">
@@ -26,7 +29,7 @@ export default function Anel({ consumido, meta }) {
           strokeLinecap="round"
           strokeDasharray={C}
           strokeDashoffset={C * (1 - dentro)}
-          style={{ transition: 'stroke-dashoffset 0.4s ease' }}
+          style={{ transition: `stroke-dashoffset var(--lento) var(--curva)` }}
         />
         {excedente > 0 && (
           <circle
@@ -39,7 +42,7 @@ export default function Anel({ consumido, meta }) {
             strokeLinecap="round"
             strokeDasharray={C}
             strokeDashoffset={C * (1 - excedente)}
-            style={{ transition: 'stroke-dashoffset 0.4s ease' }}
+            style={{ transition: `stroke-dashoffset var(--lento) var(--curva)` }}
           />
         )}
       </svg>
