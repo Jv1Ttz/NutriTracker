@@ -105,6 +105,22 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Sem isto o navegador espera ~300 ms depois do toque para ver se vem um
+   segundo toque (zoom por toque duplo). O app inteiro parece lento por causa
+   disso, e nada aqui precisa de toque duplo. */
+button,
+a,
+input,
+select,
+textarea,
+label,
+.resultado,
+.item,
+.chip,
+.opcao {
+  touch-action: manipulation;
+}
+
 html,
 body,
 #root {
@@ -440,9 +456,27 @@ p {
   font-size: 13px;
 }
 
+/* O "+" e o alvo mais tocado do app e tinha 30 px, abaixo dos 44 que o dedo
+   precisa. O circulo continua pequeno por desenho; quem cresce e a area
+   sensivel, com um retangulo invisivel por cima. */
+.btn-add::after,
+.icone-btn::after {
+  content: '';
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+}
+
+.btn-add,
+.icone-btn {
+  position: relative;
+}
+
 .btn-add {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: var(--sup2);
   color: var(--kcal);
@@ -669,8 +703,13 @@ p {
 .folha {
   width: 100%;
   max-width: 560px;
+  /* dvh acompanha a barra do navegador que aparece e some ao rolar; o vh
+     acima e a reserva para quem nao suporta */
   max-height: 92vh;
+  max-height: 92dvh;
   overflow-y: auto;
+  /* sem isto, rolar ate o fim da folha comeca a arrastar a pagina atras dela */
+  overscroll-behavior: contain;
   background: var(--bg);
   border-radius: 20px 20px 0 0;
   border-top: 1px solid var(--borda);

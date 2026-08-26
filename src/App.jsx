@@ -3,6 +3,7 @@ import { useStore } from './lib/db.js';
 import { sincronizar } from './lib/sync.js';
 import { temSessaoGuardada, voltandoDeLogin, limparUrlDeLogin } from './lib/supabase.js';
 import { observarSistema } from './lib/tema.js';
+import { empilhar } from './lib/navegacao.js';
 import { calcularMetas } from './lib/metas.js';
 import { chaveData } from './lib/util.js';
 import BemVindo from './components/BemVindo.jsx';
@@ -69,6 +70,8 @@ export default function App() {
   // em "automatico", segue o sistema mudando com o app aberto
   useEffect(() => observarSistema(() => {}), []);
   const [aba, setAba] = useState('hoje');
+  // entrada do historico enquanto o usuario NAO esta na aba Hoje
+  const desfazerAba = useRef(null);
   const [data, setData] = useState(() => chaveData());
   const [refeicaoAlvo, setRefeicaoAlvo] = useState('almoco');
   // abertura -> acesso -> cadastro. So vale enquanto nao existe perfil:
@@ -88,9 +91,32 @@ export default function App() {
     return <Onboarding />;
   }
 
+  /**
+   * Troca de aba deixando o botao voltar do celular voltar para Hoje, em vez
+   * de sair do app. So UMA entrada e empurrada: pular de Adicionar para Peso
+   * nao empilha de novo, senao seria preciso apertar voltar tres vezes para
+   * sair de tres abas visitadas.
+   */
+  function irParaAba(id) {
+    if (id === aba) return;
+    if (id === 'hoje') {
+      desfazerAba.current?.();
+      desfazerAba.current = null;
+    } else if (!desfazerAba.current) {
+      desfazerAba.current = empilhar(() => {
+        desfazerAba.current = null;
+        setAba('hoje');
+        window.scrollTo(0, 0);
+      });
+    }
+    setAba(id);
+    // sem isto a aba nova abre na altura de rolagem da anterior
+    window.scrollTo(0, 0);
+  }
+
   function irParaAdicionar(refeicao) {
     setRefeicaoAlvo(refeicao);
-    setAba('buscar');
+    irParaAba('buscar');
   }
 
   return (
@@ -110,7 +136,7 @@ export default function App() {
             estado={estado}
             data={data}
             refeicaoInicial={refeicaoAlvo}
-            onDepoisDeAdicionar={() => setAba('hoje')}
+            onDepoisDeAdicionar={() => irParaAba('hoje')}
           />
         )}
         {aba === 'peso' && <Peso estado={estado} metas={metas} />}
@@ -122,7 +148,7 @@ export default function App() {
           <button
             key={id}
             className={aba === id ? 'ativa' : ''}
-            onClick={() => setAba(id)}
+            onClick={() => irParaAba(id)}
             aria-current={aba === id ? 'page' : undefined}
           >
             <Icone />
