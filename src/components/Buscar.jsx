@@ -125,8 +125,7 @@ export default function Buscar({ estado, data, refeicaoInicial, onDepoisDeAdicio
         <div className="centro-txt">
           Busque pelo nome do alimento.
           <br />
-          São 20 mil itens embutidos: a tabela TACO, uma seleção da USDA e os produtos de mercado
-          brasileiro da Open Food Facts. Tudo funciona offline, o leitor inclusive.
+          São 20 mil alimentos e produtos de mercado, e tudo funciona sem internet.
         </div>
       )}
 

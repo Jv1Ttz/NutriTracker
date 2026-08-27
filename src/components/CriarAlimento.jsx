@@ -55,8 +55,8 @@ export default function CriarAlimento({ onFechar, onCriado, codigoInicial = null
 
       {codigoInicial && (
         <div className="aviso info" style={{ marginTop: 12 }}>
-          Vai ficar salvo no código <b>{codigoInicial}</b>. Da próxima vez que você escanear essa
-          embalagem, o app acha na hora — sem internet.
+          Fica salvo no código <b>{codigoInicial}</b>: da próxima vez que você escanear essa
+          embalagem, o app acha na hora.
         </div>
       )}
 

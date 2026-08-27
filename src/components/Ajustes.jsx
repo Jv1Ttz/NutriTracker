@@ -106,10 +106,7 @@ export default function Ajustes({ estado, metas }) {
             </button>
           ))}
         </div>
-        <p className="sub" style={{ marginTop: 10, lineHeight: 1.5 }}>
-          Vale só para este aparelho — não vai junto na sincronização. Faz sentido o celular
-          ficar escuro à noite e o computador continuar claro.
-        </p>
+        <p className="sub" style={{ marginTop: 10 }}>Vale só para este aparelho.</p>
       </div>
 
       <div className="cartao">
@@ -275,13 +272,8 @@ export default function Ajustes({ estado, metas }) {
       <div className="cartao">
         <div className="cartao-titulo">Seus dados são só seus</div>
         <p className="sub" style={{ marginBottom: 12, lineHeight: 1.55 }}>
-          Por padrão tudo fica salvo no próprio navegador deste aparelho: sem servidor, sem conta,
-          sem ninguém vendo. Se você ligar a sincronização acima, aí o diário passa a viajar por
-          uma conta sua — e continua só sua, ninguém mais alcança esses dados.
-        </p>
-        <p className="sub" style={{ marginBottom: 12, lineHeight: 1.55 }}>
-          De um jeito ou de outro, vale baixar um backup de vez em quando: limpar os dados do
-          navegador apaga a cópia deste aparelho.
+          Seus dados ficam neste aparelho e só você os alcança. Vale baixar um backup de vez em
+          quando: limpar os dados do navegador apaga a cópia daqui.
         </p>
         <div className="linha">
           <button className="btn" onClick={baixarBackup}>
@@ -297,39 +289,9 @@ export default function Ajustes({ estado, metas }) {
       <div className="cartao">
         <div className="cartao-titulo">Sobre os números</div>
         <p className="sub" style={{ lineHeight: 1.55 }}>
-          Os alimentos vêm de três bases. A <b>TACO 4ª edição</b> (UNICAMP, 2011) para alimentos
-          brasileiros; uma seleção da <b>USDA FoodData Central</b> com o que a TACO não cobre —
-          quinoa, chia, iogurte grego, leites vegetais, suplementos; e o{' '}
-          <b>Open Food Facts</b> para produtos industrializados com código de barras. A meta calórica usa a equação
-          de <b>Mifflin-St Jeor</b>, que é uma estimativa populacional: o seu gasto real pode variar
-          uns 10% para cima ou para baixo. Quem dá a palavra final é a balança ao longo das semanas.
-          Isto aqui é uma ferramenta de acompanhamento, não substitui nutricionista ou médico.
-        </p>
-      </div>
-
-      <div className="cartao">
-        <div className="cartao-titulo">Créditos das bases</div>
-        <p className="sub" style={{ lineHeight: 1.55 }}>
-          Os produtos com código de barras vêm do{' '}
-          <a href="https://world.openfoodfacts.org/data" target="_blank" rel="noopener">
-            Open Food Facts
-          </a>
-          , uma base aberta e colaborativa, disponibilizada sob a licença{' '}
-          <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener">
-            ODbL 1.0
-          </a>
-          . A seleção embutida neste app é uma base derivada e segue a mesma licença.
-        </p>
-        <p className="sub" style={{ lineHeight: 1.55, marginTop: 10 }}>
-          A <b>TACO</b> é da UNICAMP e a <b>USDA FoodData Central</b> é de domínio público. Os
-          nomes em português dos itens da USDA são deste app; os valores, não.
-        </p>
-        <p className="sub" style={{ lineHeight: 1.55, marginTop: 10 }}>
-          Os ícones vêm do{' '}
-          <a href="https://lucide.dev" target="_blank" rel="noopener">
-            Lucide
-          </a>
-          , sob licença ISC.
+          Sua meta é uma <b>estimativa</b>: o gasto real pode variar uns 10% para mais ou para
+          menos. Quem dá a palavra final é a balança ao longo das semanas. Este app acompanha, não
+          substitui nutricionista ou médico.
         </p>
       </div>
 
@@ -338,9 +300,11 @@ export default function Ajustes({ estado, metas }) {
       </button>
 
       <p className="sub" style={{ textAlign: 'center', marginTop: 18 }}>
-        <a href="/privacidade.html">Política de Privacidade</a>
+        <a href="/privacidade.html">Privacidade</a>
         {' · '}
-        <a href="/termos.html">Termos de Serviço</a>
+        <a href="/termos.html">Termos</a>
+        {' · '}
+        <a href="/fontes.html">Fontes dos alimentos</a>
       </p>
     </>
   );

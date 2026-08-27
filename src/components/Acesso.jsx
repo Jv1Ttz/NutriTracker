@@ -66,10 +66,7 @@ export default function Acesso({ onSeguir }) {
 
     // conta criada mas sem sessao = confirmacao de e-mail ligada no servidor
     if (!(await temSessao())) {
-      setErro(
-        'Conta criada, mas o servidor exige confirmar o e-mail antes de entrar. ' +
-          'Desligue "Confirm email" em Authentication → Providers → Email no Supabase.'
-      );
+      setErro('Não consegui concluir o cadastro por e-mail. Tente entrar com o Google.');
       setOcupado(false);
       return;
     }

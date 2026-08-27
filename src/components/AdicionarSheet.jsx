@@ -69,16 +69,15 @@ export default function AdicionarSheet({
 
       {alimento.fonte === 'off' && !alimento.completo && (
         <div className="aviso" style={{ marginTop: 12 }}>
-          Esse produto está incompleto no Open Food Facts. Confira os valores no rótulo antes de
-          confiar no número.
+          Faltam informações neste produto. Confira o rótulo antes de confiar no número.
         </div>
       )}
 
       {alimento.origem && (
         <div className="aviso info" style={{ marginTop: 12 }}>
           {alimento.fonte === 'usda'
-            ? `Esse item não está na TACO. Os valores vêm da ${alimento.origem}.`
-            : `A TACO não traz os valores desse item. Usei os dados de: ${alimento.origem}.`}
+            ? 'Este alimento não está na tabela brasileira. Os valores vêm de uma base internacional.'
+            : 'Os valores deste item vieram de outra fonte, porque a tabela brasileira não os traz.'}
         </div>
       )}
 

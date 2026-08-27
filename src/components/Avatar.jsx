@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { salvarFoto } from '../lib/db.js';
-import { prepararFoto, tamanhoEmKb } from '../lib/foto.js';
+import { prepararFoto } from '../lib/foto.js';
 import { IconeLapis } from './Icones.jsx';
 
 /** Iniciais como reserva: melhor que um boneco cinza generico. */
@@ -74,12 +74,7 @@ export default function Avatar({ perfil, editavel = false, tamanho = 64 }) {
             </button>
           )}
         </div>
-        {perfil?.foto && (
-          <p className="sub" style={{ marginTop: 8, fontSize: 12 }}>
-            Reduzida para 256 px · {tamanhoEmKb(perfil.foto)} KB. Fica no aparelho e acompanha a
-            sincronização.
-          </p>
-        )}
+
       </div>
 
       <input

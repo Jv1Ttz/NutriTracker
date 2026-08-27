@@ -103,10 +103,7 @@ export default function Conta() {
         modo === 'criar' ? await criarConta(email, senha) : await entrarComSenha(email, senha);
       if (falha) return setErro(falha);
       if (!(await temSessao())) {
-        return setErro(
-          'Conta criada, mas o servidor exige confirmar o e-mail antes de entrar. ' +
-            'Desligue "Confirm email" em Authentication → Providers → Email no Supabase.'
-        );
+        return setErro('Não consegui concluir o cadastro por e-mail. Tente entrar com o Google.');
       }
       const r = await sincronizar();
       if (r.estado === 'ok') {

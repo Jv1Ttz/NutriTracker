@@ -67,8 +67,7 @@ export default function Scanner({ onFechar, onProduto, onCadastrar }) {
     async function iniciar() {
       if (!navigator.mediaDevices?.getUserMedia) {
         setErro(
-          'Este navegador não dá acesso à câmera. Se você abriu pelo IP da rede em http, ' +
-            'use https ou digite o código na mão.'
+          'Este navegador não dá acesso à câmera. Digite o código na mão, logo abaixo.'
         );
         setEstado('erro');
         return;
@@ -201,10 +200,9 @@ export default function Scanner({ onFechar, onProduto, onCadastrar }) {
       {estado === 'consultando' && <p className="centro-txt">Procurando o produto...</p>}
       {estado === 'erro' && semCadastro && (
         <div className="aviso info" style={{ marginTop: 14 }}>
-          <b>Esse produto ainda não está em nenhuma base.</b>
-          <br />O código {semCadastro} foi lido certo — ele é que não existe no Open Food Facts,
-          que é colaborativo e não tem tudo. Cadastre uma vez, copiando do rótulo, e o app passa a
-          reconhecer essa embalagem para sempre, mesmo sem internet.
+          <b>Não encontrei esse produto.</b>
+          <br />O código {semCadastro} foi lido certo, só não está cadastrado. Copie os valores do
+          rótulo uma vez e o app reconhece essa embalagem para sempre, mesmo sem internet.
           {onCadastrar && (
             <button
               className="btn principal bloco"
@@ -223,7 +221,7 @@ export default function Scanner({ onFechar, onProduto, onCadastrar }) {
             Do mesmo fabricante
           </div>
           <p className="sub" style={{ marginBottom: 10, lineHeight: 1.5 }}>
-            Talvez seja um destes, em outro sabor ou tamanho. Confira o rótulo antes de escolher.
+            Talvez seja um destes. Confira o rótulo antes de escolher.
           </p>
           {irmaos.map((a) => (
             <button key={a.id} className="resultado" onClick={() => aoAchar.current(a)}>
@@ -263,8 +261,7 @@ export default function Scanner({ onFechar, onProduto, onCadastrar }) {
       </form>
 
       <p className="sub" style={{ lineHeight: 1.5 }}>
-        Os produtos vêm do Open Food Facts, uma base aberta e colaborativa. Se algum valor estiver
-        estranho, confira o rótulo.
+        Se algum valor parecer estranho, confira o rótulo.
       </p>
     </Folha>
   );

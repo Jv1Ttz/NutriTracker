@@ -8,7 +8,7 @@ import Marca from './Marca.jsx';
  * onde os dados dela ficam ANTES de digitar qualquer coisa.
  */
 const PONTOS = [
-  ['20 mil alimentos embutidos', 'A tabela TACO, o que ela não tem (quinoa, chia, whey) e 19 mil produtos de mercado brasileiro. Busca e leitor de código de barras funcionam sem internet.'],
+  ['20 mil alimentos', 'Do arroz e feijão aos produtos de mercado. Busca e leitor de código de barras funcionam sem internet.'],
   ['Código de barras', 'Aponta a câmera para a embalagem e o produto entra com os valores do rótulo.'],
   ['A balança dá a palavra final', 'Toda meta é estimativa. O app compara seu ritmo real e corrige o número.'],
 ];
