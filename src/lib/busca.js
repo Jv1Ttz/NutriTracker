@@ -165,7 +165,17 @@ export function buscar(consulta, customs = [], limite = 60) {
     if (a.doUsuario) pontos += 15;
     // e produto de marca desce um pouco: quem busca "arroz" quer o arroz da
     // TACO, nao trinta pacotes de arroz de marca
-    else if (a.fonte === 'off') pontos -= 8;
+    // A penalidade cobre o teto do bonus de popularidade logo abaixo, de
+    // proposito: produto de marca popular sobe entre OS OUTROS DE MARCA, mas
+    // nunca acima da TACO. Sem isso, buscar "leite" passava a trazer "Leite
+    // UHT Integral" antes do leite de vaca da tabela.
+    else if (a.fonte === 'off') pontos -= 14;
+    // Produto que gente de verdade escaneou sobe. Limitado a 12 de proposito:
+    // e desempate entre resultados parecidos, nao deve atropelar quem casou
+    // melhor com o que foi digitado. Sem isso, procurar "oreo" trazia "Oreo
+    // Picole" e "Oreo Selena Gomes" na frente do biscoito - o nome curto que
+    // COMECA com o termo ganhava do nome longo que o tem no meio.
+    if (a.pop) pontos += Math.min(a.pop, 12);
     pontos -= alvo.length * 0.15; // nomes curtos e mais especificos primeiro
 
     achados.push({ alimento: a, pontos });

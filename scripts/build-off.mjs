@@ -128,6 +128,12 @@ for (const p of candidatos) {
     fibra: p.fibra === null ? null : Math.round(p.fibra * 10) / 10,
     sodio: p.sodio === null ? null : Math.round(p.sodio * 10) / 10,
     ...(medidas.length ? { medidas } : {}),
+    // Quantas pessoas escanearam. Vira desempate na busca: sem ele, procurar
+    // "oreo" trazia "Oreo Picole" e "Oreo Selena Gomes" na frente do biscoito,
+    // porque o nome curto que COMECA com o termo ganhava do nome longo que o
+    // tem no meio - e o biscoito se chama "Biscoito Chocolate Recheio ... Oreo".
+    // So vai quando existe: 16 mil dos 19 mil produtos nunca foram escaneados.
+    ...(p.scans > 0 ? { pop: p.scans } : {}),
     fonte: 'off',
   });
 }

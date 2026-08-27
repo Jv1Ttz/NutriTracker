@@ -14,6 +14,14 @@ const GRUPOS = [
   ['abobora', 'jerimum'],
   ['refrigerante', 'refri'],
   ['iogurte', 'yogurte', 'yogurt'],
+
+  // Metade do pais fala bolacha, a outra metade biscoito, e a base so tem
+  // "Biscoito". Sozinha, "bolacha" ate achava coisa; o problema aparecia ao
+  // juntar com o produto: "bolacha oreo" dava ZERO, porque os Oreo estao
+  // cadastrados como "Biscoito ... Oreo".
+  ['biscoito', 'bolacha'],
+  ['sanduiche', 'sanduba', 'sanduba', 'lanche'],
+  ['frances', 'cacetinho', 'sal'],
   ['inhame', 'cara'],
 
   // Nao e grafia, e o que a palavra quer dizer na pratica: quem procura
